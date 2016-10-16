@@ -1,0 +1,21 @@
+
+		   <div class="side-menu">
+				Bem vindo,
+				<p id="uname">${name}</p>
+				<p class="side-menu-title">Salas:</p>
+				<ul>
+					<#list rooms as iroom>
+						<a href="/painel/${iroom.doorid}"><li>Sala ${iroom.doorid}</li></a>
+					</#list>
+				</ul>
+				<p class="side-menu-title">Menu:</p>
+				<ul>
+					<#if level == 5>
+						<a href="/painel/sistema/usuarios"><li>Usuarios cadastrados</li></a>
+						<a href="/painel/sistema/config"><li>Configuracoes</li></a>
+					</#if>
+				</ul>
+				<p class="side-menu-title side-menu-status">Status do sistema: <span>Online</span></p>
+			</div>
+            
+		

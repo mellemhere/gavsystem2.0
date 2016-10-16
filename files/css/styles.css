@@ -1,0 +1,283 @@
+/* 
+    Created on : Jul 19, 2016, 11:07:21 AM
+    Author     : MellemHere
+*/
+
+
+.loader{
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(250, 250, 250, 0.72);
+    z-index: 1;
+    text-align: center;
+    margin-top: -30px;
+}
+
+/*
+    MENU
+*/
+.header{
+   width: 100%;
+   height: 60px;
+}
+.header span{
+   font-size: 15px;
+   float: right;
+}
+.header .room-title{
+    margin-top: 0px;
+    padding-bottom: 10px;
+	float: left;
+}
+
+.side-menu{
+    position: fixed;
+    left: -255px;
+    top: 0px;
+    width: 225px;
+    background-color: #eeeeee;
+    height: 100%;
+    padding-top: 78px;
+    padding-left: 10px;
+    color: black;
+}
+
+.side-menu #uname{
+	font-weight: 500;
+}
+
+.side-menu ul{
+	list-style-type: none;
+	padding-left: 10px;
+}
+
+.side-menu li{
+	padding-top: 5px;
+    padding-bottom: 5px;
+    padding-left: 10px;
+	cursor: pointer;
+}
+
+.side-menu a{
+	text-decoration: none;
+    color: black;
+}
+
+.side-menu-title{
+    padding: 5px;
+    padding-left: 11px;
+    background-color: #e1e1e1;
+    margin-left: -10px;
+    font-weight: 400;
+}	
+
+.side-menu-status{
+	position: absolute;
+    bottom: 0px;
+    width: 100%;
+}
+
+.side-menu-status span{
+	color: green;
+}
+
+.side-menu li:hover{
+    background-color: #e1e1e1;
+}
+
+.side-menu .activeroom{
+    background-color: #e1e1e1;
+}
+
+.hm{
+    color: #434343;
+    font-size: 30px;
+    float: left;
+    margin-top: 4px;
+	cursor: pointer;
+}
+
+.hm:hover{
+    color: #66e190;
+}
+
+textArea{
+    resize: none;
+}
+
+.control-label{
+    color: #646464 !important;
+}
+
+.content{
+    width: 980px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.log-b{
+    height: 263px;
+}
+
+#log{
+    width: 100%;
+    height: 100%;  
+}
+
+body{
+    padding-top: 40px;
+    padding-top: 100px;
+	background-color: #e6e6e6;
+}
+
+.nav-menu{
+    height: 70px;
+    margin-bottom: 0px;
+    background-color: rgb(238, 238, 238) !important;
+    position: fixed;
+    z-index: 9999;
+    width: 100%;
+    top: 0px;   
+}
+
+.nav-center{
+    position: relative;
+    padding: 0px !important;
+}
+
+.nav-qc a{
+    background-color: rgb(238, 238, 238) !important;
+    color: black !important;
+}
+
+.nav-qc a:hover{
+    background-color: rgb(226, 223, 223) !important;
+}
+
+.nav-menu > .container-fluid{
+    padding-right: 40px;  
+}
+
+.nav-menu .navbar-brand{
+    background-color: rgba(218, 218, 218, 0.62);
+    height: 100%;
+}
+
+.nav-menu .navbar-brand:hover{
+    background-color: rgba(218, 218, 218, 0.62) !important;
+}
+
+.nav-menu .navbar-brand img{
+    width: 160px;
+    margin-top: -11px;
+    float: left;
+	margin-left: 10px;
+}
+
+.nav-menu .navbar-brand p{
+    float: right;
+    padding-left: 5px;
+    margin-top: 6px;
+    font-size: 15px;
+}
+
+.nav-menu .nav-left li a{
+    height: 70px;
+    padding-top: 27px;
+	color: black;
+}
+
+.nav-menu .nav-left li:hover{
+    background-color: rgb(225, 225, 225);
+	color: black;
+}
+
+
+.active{
+    color: black !important;
+    background-color: #f3f3f3 !important;
+}
+
+.nav-menu .navbar-right li a{
+    height: 70px;
+    padding-top: 27px;
+    font-size: 20px;
+}
+
+.nav-menu #nav-newentry{
+    color: black;
+}
+
+.nav-menu #nav-newentry:hover{
+    background-color: rgb(225, 225, 225);
+}
+
+.dd-nav{
+    background-color: #01579b !important;
+}
+
+.dd-nav .dropdown-toggle{
+    color: white !important;
+    margin: 0px !important;
+    box-shadow: none !important;
+    position: relative !important;
+    left: -1px !important;
+}
+
+.dd-nav a i{
+    font-size: 15px !important;
+    margin: 0px !important;
+}
+
+.dropdown-menu{
+    padding: 0px !important;
+}
+
+.dropdown-menu li a{
+    background-color: white !important;
+    font-weight: lighter !important;
+    height: 50px !important;
+}
+
+.dropdown-menu li a:hover{
+    background-color: white !important;
+    cursor: pointer;
+}
+
+/*
+    Containers
+*/
+
+.content-full{
+    width: 100%;
+    background-color: white;
+    min-height: 200px;
+}
+
+
+/*
+    FOOT
+*/
+
+footer{
+    position: absolute;
+    width: 100%;
+    height: 300px;
+    margin-top: 100px;
+    background-color: #213b31;
+    overflow: hidden;
+}
+
+
+#search::-webkit-input-placeholder {
+    font-size: 30px !important;
+}
+#search::-moz-placeholder {
+    font-size: 30px;
+} /* Firefox 19+ */
+#search:-moz-placeholder {
+    font-size: 30px;}  /* Firefox 18- */
+#search:-ms-input-placeholder {
+    font-size: 30px;
+} /* IE */

@@ -1,0 +1,286 @@
+<html>
+	<head>
+        <title>SISGAV 2.0 - Painel GAV</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <link href="/css/bootstrap.css" rel="stylesheet">
+        <link href="/css/material.css" type="text/css" rel="stylesheet">
+        <link href="/css/fonts.css" type="text/css" rel="stylesheet">
+		<link href="/css/styles.css" type="text/css" rel="stylesheet">
+    </head>
+
+    <body style="padding-bottom: 200px;padding-top: 100px;">
+        <!--<div class="loader" style="position: fixed; width: 100%; top: 0px; height: 100%; z-index: 2147483647; background-color: rgba(255, 255, 255, 0.709804);">
+
+            <div class="container" style="
+                 text-align: center;
+                 margin-top: 145px;
+                 "><img src="/img/ring.gif">
+                <h1 class="app-hint"> Carregando pagina...</h1></div>
+
+        </div>-->
+        <div class="nav-menu navbar navbar-default">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-responsive-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="/">
+                        <img src="/img/logoW.png">
+						</a>
+                </div>
+
+                <ul class="nav nav-left navbar-nav">
+                    <li class="active"><a href="/">Pagina inicial</a></li>
+                    <li><a href="/newUser">Novo usuario</a></li>
+                    <li><a href="/userList">Lista de usuarios {n.users}</a></li>
+
+                    <li><a href="/stats">Estatisticas</a></li>
+                </ul>
+
+                <div class="content panel">
+                    <ul class="nav navbar-nav navbar-right nav-center">
+                        <li class="nav-qc">
+                            <a href="#" id="opendoor">Abrir porta</a>
+                        </li>
+						<li id="nav-newentry"><a href="#">Sair</a></li>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+
+
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">Broadcast da porta:</h3>
+                        </div>
+                        <div class="panel-body log-b" style="padding: 0px;">
+                            <img src="" class="webcam" width="100%" height="100%" />
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+
+                    <div class="bs-component">
+                        <div class="panel panel">
+                            <div class="panel-heading">
+                                <h3 class="panel-title">Controle da iluminacao</h3>
+                            </div>
+
+                            <style>
+                                .lightcontrol a{
+                                    margin: 0px !important;
+                                    width: 86px !important;
+                                    height: 70px !important;
+                                    padding-left: 25px !important;
+                                }
+                                .lightcontrol a i{
+                                    font-size: 28px;
+                                }
+
+                                .lightcontrol .btn-success i{
+                                    color: #e8e879;
+                                }
+
+                                .lightcontrol a p{
+                                    margin-top: 8px;
+                                }
+                            </style>
+
+                            <div class="panel-body lightcontrol">
+                                <a class="btn btn-raised light btn-default" lid="15">
+                                    <i class="fa fa-lightbulb-o"></i>
+                                    <br>
+                                    <p>Luz 1</p><div class="ripple-container"></div>
+                                </a>
+
+                                <a class="btn btn-raised light btn-default" lid="16">
+                                    <i class="fa fa-lightbulb-o"></i>
+                                    <br>
+                                    <p>Luz 2</p><div class="ripple-container"></div>
+                                </a>
+
+
+                                <a class="btn btn-raised light btn-default" lid="17">
+                                    <i class="fa fa-lightbulb-o"></i>
+                                    <br>
+                                    <p>Luz 3</p><div class="ripple-container"></div>
+                                </a>
+
+
+                                <a class="btn btn-raised light btn-default" lid="18">
+                                    <i class="fa fa-lightbulb-o"></i>
+                                    <br>
+                                    <p>Luz 4</p><div class="ripple-container"></div>
+                                </a>
+
+                                <a class="btn btn-raised  light btn-default" lid="19">
+                                    <i class="fa fa-lightbulb-o"></i>
+                                    <br>
+                                    <p>Luz 5</p><div class="ripple-container"></div>
+                                </a>
+                            </div>
+
+
+
+                        </div>
+                    </div><div class="bs-component">
+                        <div class="panel panel">
+                            <div class="panel-heading">
+                                <h3 class="panel-title">Controle de outros</h3>
+                            </div>
+
+
+
+
+
+                            <div class="panel-body lightcontrol">
+                                <a class="btn btn-raised light btn-default" lid="14" style="
+                                   width: 130px !important;
+                                   ">
+                                    <i class="fa fa-asterisk" aria-hidden="true"></i>
+                                    <br>
+                                    <p>Ventilador</p><div class="ripple-container"></div>
+                                </a>
+                                <a class="btn btn-raised light btn-default" lid="9999" style="
+                                   width: 130px !important;
+                                   ">
+                                    <i class="fa fa-desktop" aria-hidden="true"></i>
+                                    <br>
+                                    <p>Projetor</p><div class="ripple-container"></div>
+                                </a>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="row">
+
+
+                <div class="col-md-4">
+                    <div class="bs-component">
+                        <div class="panel panel-primary">
+                            <div class="panel-heading">
+                                <h3 class="panel-title">Ultima pessoa passar pela porta</h3>
+                            </div>
+                            <div class="panel-body lastEntryName">Sem data</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="bs-component">
+
+
+                        <div class="panel panel-success">
+                            <div class="panel-heading">
+                                <h3 class="panel-title">Numero de vezes que a porta abriu</h3>
+                            </div>
+                            <div class="panel-body timesOpened">000</div>
+                        </div>
+
+
+                    </div>
+                </div><div class="col-md-4">
+                    <div class="bs-component">
+
+
+
+
+                        <div class="panel panel-warning">
+                            <div class="panel-heading">
+                                <h3 class="panel-title">Tempo vivo (Uptime)</h3>
+                            </div>
+                            <div class="panel-body timealive">00:00:00</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="row">
+
+
+                <div class="col-md-4">
+                    <div class="bs-component">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h3 class="panel-title">Consumo de energia da sala (Watts)</h3>
+                            </div>
+                            <div class="panel-body consumoDeEnergia">Sem data</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="bs-component">
+                        <div class="panel panel-danger">
+                            <div class="panel-heading">
+                                <h3 class="panel-title">Custo da energia utilizada</h3>
+                            </div>
+                            <div class="panel-body consumoDeEnergiaPreco">000</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="bs-component">
+                        <div class="panel panel-success">
+                            <div class="panel-heading">
+                                <h3 class="panel-title">Custo da energia economizada</h3>
+                            </div>
+                            <div class="panel-body">R$ 0.00</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">Log do servidor:</h3>
+                        </div>
+                        <div class="panel-body log-b">
+                            <textarea id="log" class="form-control" disabled="true">Carregando log.....</textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+        <script src="/js/jquery.js"></script>
+
+
+        <script>
+
+            $.fn.scrollBottom = function () {
+                return $(this).scrollTop($(this)[0].scrollHeight);
+            };
+
+
+            
+            $(document).on('click', '#opendoor', function () {
+                
+            });
+
+
+
+            $(document).on('click', '.light', function () {
+//socket.emit('lightChange', {lightID: $(this).attr('lid'), lightState: "null"});
+            });
+
+
+            
+        </script>
+
+
+
+    </body></html>

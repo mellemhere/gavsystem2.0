@@ -1,0 +1,165 @@
+<html>
+	<head>
+        <title>SISGAV 2.0 - Lista de usuarios</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <link href="/css/bootstrap.css" rel="stylesheet">
+        <link href="/css/material.css" type="text/css" rel="stylesheet">
+        <link href="/css/fonts.css" type="text/css" rel="stylesheet">
+		<link href="/css/styles.css" type="text/css" rel="stylesheet">
+    </head>
+
+    <body>
+       <div class="nav-menu navbar navbar-default">
+		   <div class="side-menu">
+				Bem vindo,
+				<p id="uname">${name}</p>
+				<p class="side-menu-title">Salas:</p>
+				<ul>
+					<#list rooms as iroom>
+						<a href="/painel/${iroom.doorid}"><li>Sala ${iroom.doorid}</li></a>
+					</#list>
+				</ul>
+				<p class="side-menu-title">Menu:</p>
+				<ul>
+					<#if level == 5>
+						<a href="/painel/sistema/usuarios"><li>Usuarios cadastrados</li></a>
+						<a href="/painel/sistema/config"><li>Configuracoes</li></a>
+					</#if>
+				</ul>
+				<p class="side-menu-title side-menu-status">Status do sistema: <span>Online</span></p>
+			</div>
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <div class="navbar-brand">
+                        <a class="hm"><i class="fa fa-bars" aria-hidden="true"></i></a>
+						<a href="/"><img class="logo" src="/img/logoW.png"></a>
+					</div>
+                </div>
+
+                <ul class="nav nav-left navbar-nav">
+					<li class="active"><a href="/">Voltar ao inicio</a></li>
+					<li><a href="/painel/sistema/novo-usuario">Novo usuario</a></li>
+                </ul>
+
+                <div class="content panel">
+                    <ul class="nav navbar-nav navbar-right nav-center">
+						<li id="nav-newentry"><a href="/sair">Sair</a></li>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+		
+		<div class="loader">
+			<img src="/img/loading.gif">
+			<h1 id="loader-message">Conectando a sala....</h1>
+		</div>
+		
+        <div class="container">
+			<div class="header">
+				<h1 class="room-title">Lista de usuarios</h1>
+				
+				<span>Numero de pessoas cadastradas: ${users?size}</span>
+			</div>
+            
+                            <table class="table table-striped table-hover ">
+                                <thead style="background-color: #dfdfdf;">
+                                    <tr>
+                                        <th>Nome</th>
+                                        <th>UID</th>
+                                        <th>Matricula</th>
+                                        <th>Cargo</th>
+                                        <th>A&ccedil;&atilde;o</th>
+                                    </tr>
+                                </thead>
+                                <style>
+                                    .fa-pencil-square-o{
+                                        margin-right: 10px;
+                                    }
+                                </style>
+                                <tbody class="users">
+									<#list users as user>
+										<tr>
+											<td style="width: 540px;"> ${user.name} </td>
+											<td> ${user.uid?string.computer} </td>
+											<td> ${user.mid?string.computer} </td>
+											<td> ${user.level} </td>
+											<td>
+												<a class="fa fa-pencil-square-o" aria-hidden="true" href="/painel/sistema/novo-usuario/${user.id?string.computer}"></a>
+											</td>
+										</tr>
+									</#list>
+                                </tbody>
+                            </table>   
+        </div>
+
+
+
+        <script src="/js/jquery.js"></script>
+
+
+        <script>
+
+            $.fn.scrollBottom = function () {
+                return $(this).scrollTop($(this)[0].scrollHeight);
+            };
+
+			$('.loader').hide();
+			
+			/*
+			 * 
+			 * Handle to open and close left bar helper
+			 */
+
+			var moving = false;
+			var open = false;
+			var time_to_open = 100;
+
+			function openLeftBar(){
+				if(!moving){
+					moving = true;
+					$(".side-menu").animate({
+						left: '0px'
+					}, time_to_open, function() {
+						moving = false;
+						open = true;
+					});
+				}
+			}
+
+			function closeLeftBar(){
+				if(!moving){
+					moving = true;
+					$(".side-menu").animate({
+						left: '-255px'
+					}, time_to_open, function() {
+						moving = false;
+						open = false;
+					});
+				}
+			}
+
+			function toggleLeftBar(){
+						if(open){
+							closeLeftBar();
+						}else{
+							openLeftBar();
+						}
+			}
+			
+			
+			$(document).ready(function(){
+    
+
+				$(".hm").on('click',function(){
+					toggleLeftBar();
+				});
+    
+			});
+
+            
+        </script>
+
+
+
+    </body></html>
