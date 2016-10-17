@@ -1,5 +1,6 @@
 package com.mellemhere.servers.websocket;
 
+import com.mellemhere.prop.lights.LightState;
 import com.mellemhere.main.Controller;
 import com.mellemhere.server.websocket.mObjects.DoorOpenedObject;
 import com.mellemhere.server.websocket.mObjects.EventObject;
@@ -21,9 +22,7 @@ public class WebSocketController {
 
     //SESSION ROOMID
     HashMap<Session, Integer> clients = new HashMap<>();
-    
-    
-    
+
     private final String area = "WEBSOCKET";
 
     public WebSocketController(Controller con) {
@@ -59,7 +58,8 @@ public class WebSocketController {
     public void broadcastToRoomID(int roomID, String eventName, Object message) {
         String finalMessage = con.toJSON(new EventObject(eventName, message)).toString();
 
-        this.clients.forEach((client, roomid) -> {
+        try {
+            this.clients.forEach((client, roomid) -> {
                 if (roomID == roomid) {
                     if (client.isOpen()) {
                         try {
@@ -69,7 +69,10 @@ public class WebSocketController {
                         }
                     }
                 }
-        });
+            });
+        } catch (Exception e) {
+            System.out.println("Nao foi possivel mandar mensagem");
+        }
     }
 
     public void sendMessage(Session client, String message) {
@@ -124,7 +127,7 @@ public class WebSocketController {
                         c.getConnection().getCommandHandler().sendCommand(Command.BEEP);
                         break;
                     case "l":
-                        //Light command
+                        c.getLightControl().toogleLight(args);
                         break;
                 }
             } else {
@@ -133,6 +136,7 @@ public class WebSocketController {
         } else {
             if (cmd.equalsIgnoreCase("id")) {
                 this.logClient(user, Integer.parseInt(args));
+                this.sendWelcomeData(user);
             } else {
                 this.sendMessage(user, "auth");
             }
@@ -153,6 +157,13 @@ public class WebSocketController {
 
     private Connection getConnection(Session user) {
         return con.getConnectionController().getConnection(this.clients.get(user));
+    }
+
+    private void sendWelcomeData(Session user) {
+        Connection c = this.getConnection(user);
+        if (c.getStatus() == ConnectionStatus.CONNECTED) {
+            c.getLightControl().broadcastAllToUser(user);
+        }
     }
 
 }

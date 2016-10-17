@@ -5,6 +5,7 @@
  */
 package com.mellemhere.servers.connection;
 
+import com.mellemhere.prop.lights.LightControl;
 import com.mellemhere.server.websocket.mObjects.RoomObject;
 import com.mellemhere.servers.websocket.*;
 
@@ -21,7 +22,9 @@ public class Connection {
     private RealTimeData rtd;
     
     private final ConnectionController ccon;
-
+    
+    private LightControl lightControl;
+    
     public Connection(ConnectionController ccon) {
         this.ccon = ccon;
     }
@@ -47,6 +50,10 @@ public class Connection {
         return connection;
     }
 
+    public LightControl getLightControl() {
+        return lightControl;
+    }
+
     public void setConnection(ConnectionInterface connection) {
         this.connection = connection;
     }
@@ -67,6 +74,10 @@ public class Connection {
     
     public void stopRealTimeData(){
         //TO-DO
+    }
+
+    void startLightsManagement() {
+        this.lightControl = new LightControl(this);
     }
     
     

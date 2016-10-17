@@ -1,6 +1,6 @@
 <html>
     <head>
-        <title>SISGAV 2.0 - Lista de usuarios</title>
+        <title>SISGAV 2.0 - Lista de salas</title>
         <#include "../head.html">
     </head>
 
@@ -34,18 +34,17 @@
 
         <div class="container">
             <div class="header">
-                <h1 class="room-title">Lista de usuarios</h1>
+                <h1 class="room-title">Lista de salas</h1>
 
-                <span>Numero de pessoas cadastradas: ${users?size}</span>
+                <span>Numero de salas cadastradas: ${rooms?size}</span>
             </div>
 
             <table class="table table-striped table-hover ">
                 <thead style="background-color: #dfdfdf;">
                     <tr>
-                        <th>Nome</th>
-                        <th>UID</th>
-                        <th>Matricula</th>
-                        <th>Cargo</th>
+                        <th>Nome da sala</th>
+                        <th>Numero</th>
+                        <th>Estado</th>
                         <th>A&ccedil;&atilde;o</th>
                     </tr>
                 </thead>
@@ -55,14 +54,13 @@
                     }
                 </style>
                 <tbody class="users">
-                    <#list users as user>
+                    <#list rooms as room>
                     <tr>
-                        <td style="width: 540px;"> ${user.name} </td>
-                        <td> ${user.uid?string.computer} </td>
-                        <td> ${user.mid?string.computer} </td>
-                        <td> ${user.level} </td>
+                        <td style="width: 540px;"> ${room.name} </td>
+                        <td> ${room.doorid?string.computer} </td>
+                        <td> <i class="fa fa-refresh fa-spin fa-fw"></i> Tentando conectar </td>
                         <td>
-                            <a class="fa fa-pencil-square-o" aria-hidden="true" href="/painel/sistema/novo-usuario/${user.id?string.computer}"></a>
+                            <a class="fa fa-pencil-square-o" aria-hidden="true" href="/painel/sistema/nova-sala/"></a>
                         </td>
                     </tr>
                     </#list>

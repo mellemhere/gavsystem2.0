@@ -1,6 +1,6 @@
 package com.mellemhere.mysql;
 
-import com.mellemhere.database.PasswordManager;
+import com.mellemhere.util.PasswordManager;
 import com.mellemhere.server.websocket.mObjects.UserObject;
 import java.sql.ResultSet;
 import java.sql.SQLException;

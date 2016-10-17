@@ -5,6 +5,7 @@
  */
 package com.mellemhere.servers.http;
 
+import com.fazecast.jSerialComm.SerialPort;
 import com.mellemhere.main.Controller;
 import com.mellemhere.servers.websocket.WebSocketController;
 import com.mellemhere.servers.websocket.WebSocketHandler;
@@ -46,9 +47,9 @@ public class HTTPController {
     public HTTPController(Controller con, WebSocketController wcon) {
         this.con = con;
         this.wcon = wcon;
-        
+
         port(HTTP_PORT);
-        
+
         staticFiles.externalLocation(RESOURCES_FOLDER);
         try {
             config.setDirectoryForTemplateLoading(new File(RESOURCES_FOLDER));
@@ -113,35 +114,25 @@ public class HTTPController {
             this.addToMap(request, "errortextmain", "Credenciais inválidas");
             this.addToMap(request, "errortextsecond", "tente novamente");
 
-            if (request.queryParams().contains("login") && request.queryParams().contains("password")) {
+            if (request.queryParams().contains("login")) {
+                if (request.queryParams().contains("password")) {
+                    String password = request.queryParams("password");
+                    String login = request.queryParams("login");
 
-                String password = request.queryParams("password");
-                String login = request.queryParams("login");
-
-                if (!password.equalsIgnoreCase("") && !login.equalsIgnoreCase("")) {
-                    if (login(login, password, request.session(true))) {
-                        response.redirect("/painel");
-                    }
-                } else if (password.equalsIgnoreCase("")) {
-                    if (con.getMysqlController().getUserController().getUserByMID(login).getPassword().equalsIgnoreCase(" ")) {
-                        forceLogin(login, request.session());
-                        response.redirect("/resetar/senha");
+                    if (!password.equalsIgnoreCase("") && !login.equalsIgnoreCase("")) {
+                        if (login(login, password, request.session(true))) {
+                            response.redirect("/painel");
+                        }
+                    } else if (password.equalsIgnoreCase("")) {
+                        if (con.getMysqlController().getUserController().getUserByMID(login).getPassword().equalsIgnoreCase(" ")) {
+                            forceLogin(login, request.session());
+                            response.redirect("/resetar/senha");
+                        }
                     }
                 }
-
             }
 
             return getHTML(request, "login");
-        });
-
-        get("/resetar/senha", (request, response) -> {
-            loggingNeeded(request.session().id(), response);
-            return getHTML(request, "resetPassword");
-        });
-
-        post("/resetar/senha", (request, response) -> {
-            loggingNeeded(request.session().id(), response);
-            return getHTML(request, "resetPassword");
         });
 
         get("/sair", (request, response) -> {
@@ -177,19 +168,19 @@ public class HTTPController {
                     "rooms",
                     con.getMysqlController().getRoomController().getRooms().toArray()));
 
-            return getHTML(request, "roomPainel");
+            return getHTML(request, "room/roomPainel");
         });
 
         //STATS
         get("/painel/:room/status", (request, response) -> {
             loggingNeeded(request.session().id(), response);
-            return getHTML(request, "roomPainel");
+            return getHTML(request, "room/roomPainel");
         });
 
         //User list
         get("/painel/:room/lista-de-usuarios", (request, response) -> {
             loggingNeeded(request.session().id(), response);
-            return getHTML(request, "roomPainel");
+            return getHTML(request, "room/roomPainel");
         });
 
         get("/painel/:room/agenda", (request, response) -> {
@@ -209,8 +200,45 @@ public class HTTPController {
                     "rooms",
                     con.getMysqlController().getRoomController().getRooms().toArray()));
 
-            return getHTML(request, "roomConfig");
+            this.addToMap(request, "isEdit", true);
+
+            this.addToMap(request, "com", SerialPort.getCommPorts());
+
+            return getHTML(request, "room/roomConfig");
         });
+
+        get("/painel/sistema/nova-sala", (request, response) -> {
+            loggingNeeded(request.session().id(), response);
+            this.addAllToMap(request, con.objectToMap(con.getMysqlController().getUserController().getUserByMID(getSessionmID(request.session()))));
+
+            this.addAllToMap(request, con.addObjectAsChildMap(this.getMap(request),
+                    "room",
+                    con.getMysqlController().getRoomController().getRoom(Integer.parseInt(request.params(":room")))));
+
+            this.addAllToMap(request, con.addObjectAsChildMap(this.getMap(request),
+                    "rooms",
+                    con.getMysqlController().getRoomController().getRooms().toArray()));
+
+            this.addToMap(request, "isEdit", false);
+
+            this.addToMap(request, "com", SerialPort.getCommPorts());
+
+            return getHTML(request, "room/roomConfig");
+        });
+
+        post("/painel/sistema/nova-sala", (request, response) -> {
+            loggingNeeded(request.session().id(), response);
+
+            try {
+                Processes.processUpdateUser(con, request);
+                response.redirect("/painel/sistema/usuarios");
+                return "";
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+                return "Ocorreu um erro";
+            }
+        });
+
         /*
         
          USERS
@@ -287,6 +315,24 @@ public class HTTPController {
             }
         });
 
+        get("/resetar/senha", (request, response) -> {
+            loggingNeeded(request.session().id(), response);
+            return getHTML(request, "resetPassword");
+        });
+
+        post("/resetar/senha", (request, response) -> {
+            loggingNeeded(request.session().id(), response);
+            try {
+                Processes.processPasswordReset(con, request,
+                        con.getMysqlController().getUserController().getUserByMID(getSessionmID(request.session())));
+                response.redirect("/painel");
+                return "";
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+                return "Ocorreu um erro";
+            }
+        });
+
         get("/painel/sistema/usuarios", (request, response) -> {
             loggingNeeded(request.session().id(), response);
 
@@ -303,15 +349,16 @@ public class HTTPController {
             return getHTML(request, "system/userlist");
         });
 
-        get("/painel/sistema/config", (request, response) -> {
-            this.resetMap(request);
-
-            return "";
-        });
-
-        post("/painel/novo-usuario", (request, response) -> {
+        get("/painel/sistema/salas", (request, response) -> {
             loggingNeeded(request.session().id(), response);
-            return getHTML(request, "painel");
+
+            this.addAllToMap(request, con.objectToMap(con.getMysqlController().getUserController().getUserByMID(getSessionmID(request.session()))));
+
+            this.addAllToMap(request, con.addObjectAsChildMap(this.getMap(request),
+                    "rooms",
+                    con.getMysqlController().getRoomController().getRooms().toArray()));
+
+            return getHTML(request, "system/roomlist");
         });
 
     }

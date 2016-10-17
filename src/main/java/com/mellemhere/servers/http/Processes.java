@@ -5,6 +5,7 @@
  */
 package com.mellemhere.servers.http;
 
+import com.mellemhere.util.PasswordManager;
 import com.mellemhere.main.Controller;
 import com.mellemhere.server.websocket.mObjects.UserObject;
 import org.json.JSONObject;
@@ -65,7 +66,7 @@ public class Processes {
         newUser.setLevel(Integer.parseInt(request.queryParams("func")));
 
         JSONObject config = new JSONObject(newUser.getConfig());
-        
+
         if (request.queryParams().contains("canpainel")) {
             config.put("painel_access", (Boolean.valueOf(request.queryParams("canpainel"))));
         } else {
@@ -75,6 +76,19 @@ public class Processes {
         newUser.setConfig(config.toString());
 
         con.getMysqlController().getUserController().updateUser(newUser);
+
+        return true;
+    }
+
+    public static boolean processPasswordReset(Controller con, Request request, UserObject user) throws Exception {
+
+        if (!request.queryParams().contains("password")) {
+            throw new Exception("Preencha o campo: password");
+        }
+
+        user.setPassword(PasswordManager.getSaltedHash(request.queryParams("password")));
+
+        con.getMysqlController().getUserController().updateUser(user);
 
         return true;
     }

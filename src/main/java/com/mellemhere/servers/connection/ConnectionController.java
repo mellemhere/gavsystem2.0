@@ -29,18 +29,20 @@ public class ConnectionController {
         con.log(area, "Abrindo todas as conecoes", null);
 
         con.getMysqlController().getRoomController().getRooms().forEach((room) -> {
-            System.out.println(con.toJSON(room));
             Connection connection = new Connection(this);
-            
+
             connection.setStatus(ConnectionStatus.CONNECTING);
             connection.setRoom(room);
 
             //STARTS TO BROADCAST STATUS OF THE DOOR
             connection.startRealTimeData();
 
+            //STARTS TO MANAGE LIGHTS
+            connection.startLightsManagement();
+
             try {
                 //STARTS CONNECTION WITH THE DOOR
-                SerialConnection serial = new SerialConnection(this, room);
+                SerialConnection serial = new SerialConnection(connection, room);
                 serial.startConnection();
                 connection.setConnection(serial);
                 connection.setStatus(ConnectionStatus.CONNECTED);
@@ -59,7 +61,7 @@ public class ConnectionController {
         connection.setRoom(room);
 
         try {
-            SerialConnection serial = new SerialConnection(this, room);
+            SerialConnection serial = new SerialConnection(connection, room);
             serial.startConnection();
             connection.setConnection(serial);
             connection.setStatus(ConnectionStatus.CONNECTED);

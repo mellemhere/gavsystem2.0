@@ -5,6 +5,7 @@
  */
 package com.mellemhere.servers.connection;
 
+import com.mellemhere.prop.lights.LightState;
 import com.mellemhere.main.Controller;
 
 /**
@@ -25,7 +26,7 @@ public class Commands {
 
     public boolean entry(String ID) {
         this.con.log(area, "Verificando o UID: " + ID, null);
-        this.con.getStatistics().setLastScan(ID);
+        //this.con.getStatistics().setLastScan(ID); TODO
         return this.con.getMysqlController().getUserController().hasUserUID(ID);
     }
 
@@ -40,31 +41,24 @@ public class Commands {
                     /*
                      SE ESTIVER CORRETO ABRE A PORTA
                      */
-                    this.con.getStatistics().doorOpened();
-                    this.con.getStatistics().setLastEntry(args);
                     return "o";
                 }
                 break;
 
             case "fo":
-
-                this.con.getStatistics().doorOpened();
                 return "o";
-
             case "c":
                 /*
                  Door closed
                  */
                 break;
             case "l":
-
                 String id = args.split("-")[0];
-                int state = 0;
                 if (args.split("-")[1].equalsIgnoreCase("on")) {
-                    state = 1;
+                    this.connection.getConnection().getLightControl().toogleLight(id, LightState.ON);
+                }else{
+                    this.connection.getConnection().getLightControl().toogleLight(id, LightState.OFF);
                 }
-
-                //this.con.getLight().lightChanged(id, state);
                 break;
             default:
                 break;

@@ -5,12 +5,11 @@
  */
 package com.mellemhere.main;
 
+import com.mellemhere.util.Festa;
+import com.mellemhere.util.LightCon_OLD;
 import com.google.gson.Gson;
-import com.mellemhere.database.DataBase;
-import com.mellemhere.database.EntryLog;
-import com.mellemhere.database.Statistics;
 import com.mellemhere.mysql.MySQLController;
-import com.mellemhere.servers.connection.LightState;
+import com.mellemhere.prop.lights.LightState_OLD;
 import com.mellemhere.server.websocket.mObjects.LightObject;
 import com.mellemhere.servers.http.HTTPController;
 import com.mellemhere.servers.connection.ConnectionController;
@@ -28,7 +27,7 @@ public class Controller {
 
     private MySQLController mysqlController;
 
-    private DataBase database;
+   // private DataBase database;
 
     private HTTPController httpController;
     private WebSocketController webSocketController;
@@ -36,13 +35,13 @@ public class Controller {
     private ConnectionController connectionController;
     
     private String LogBuffer = "";
-    private Statistics satistics;
-    private EntryLog entryLog;
+    //private Statistics satistics;
+   // private EntryLog entryLog;
     public long startTime;
 
-    private LightState light;
+    private LightState_OLD light;
 
-    public LightCon lightcon;
+    public LightCon_OLD lightcon;
 
     public Controller() {
         this.start();
@@ -52,17 +51,17 @@ public class Controller {
     public void start() {
         this.startTime = System.currentTimeMillis();
         this.mysqlController = new MySQLController(this);
-        this.database = new DataBase(this);
-        this.entryLog = new EntryLog(this);
-        this.satistics = new Statistics(this);
+        //this.database = new DataBase(this);
+        //this.entryLog = new EntryLog(this);
+       // this.satistics = new Statistics(this);
     }
 
-    public DataBase getDatabase() {
+   /* public DataBase getDatabase() {
         return database;
-    }
+    }*/
 
 
-    public LightState getLight() {
+    public LightState_OLD getLight() {
         return light;
     }
 
@@ -98,7 +97,7 @@ public class Controller {
         
     }
 
-    public LightCon getLightController() {
+    public LightCon_OLD getLightController() {
         return lightcon;
     }
 
@@ -122,9 +121,9 @@ public class Controller {
 
     }
 
-    public Statistics getStatistics() {
+    /*public Statistics getStatistics() {
         return this.satistics;
-    }
+    }*/
 
     public String getLogBuffer() {
         if (this.LogBuffer.length() > 10000) {
@@ -135,9 +134,9 @@ public class Controller {
 
 
 
-    public EntryLog getEntryLog() {
+    /*public EntryLog getEntryLog() {
         return entryLog;
-    }
+    }*/
 
     public void restart() {
        //TODO

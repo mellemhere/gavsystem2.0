@@ -19,6 +19,9 @@ import java.io.OutputStream;
 public class SerialConnection extends Thread implements ConnectionInterface {
 
     private final ConnectionController con;
+    
+    private final Connection connection;
+    
     private String area = "SERIAL-CONNECTION-";
     private final int COM_ID;
     private final RoomObject room;
@@ -31,9 +34,10 @@ public class SerialConnection extends Thread implements ConnectionInterface {
     private final Commands cmd;
     
 
-    public SerialConnection(ConnectionController con, RoomObject room) throws ConnectionError {
-
-        this.con = con;
+    public SerialConnection(Connection con, RoomObject room) throws ConnectionError {
+        
+        this.con = con.getCcon();
+        this.connection = con;
         this.COM_ID = room.getComID();
         this.room = room;
         this.area += room.getDoorID();
@@ -143,5 +147,10 @@ public class SerialConnection extends Thread implements ConnectionInterface {
     @Override
     public Commands getCommandHandler() {   
         return this.cmd;
+    }
+
+    @Override
+    public Connection getConnection() {
+       return this.connection;
     }
 }
