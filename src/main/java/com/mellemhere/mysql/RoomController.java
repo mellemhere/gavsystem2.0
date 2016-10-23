@@ -37,7 +37,7 @@ public class RoomController {
                 room.setDoorID(rs.getInt("doorID"));
                 room.setName(rs.getString("name"));
                 room.setDescription(rs.getString("description"));
-                room.setComID(rs.getInt("comID"));
+                room.setComID(rs.getString("comID"));
                 rooms.add(room);
             }
         } catch (SQLException ex) {
@@ -67,7 +67,7 @@ public class RoomController {
             room.setDoorID(rs.getInt("doorID"));
             room.setName(rs.getString("name"));
             room.setDescription(rs.getString("description"));
-            room.setComID(rs.getInt("comID"));
+            room.setComID(rs.getString("comID"));
 
             return room;
         } catch (SQLException ex) {

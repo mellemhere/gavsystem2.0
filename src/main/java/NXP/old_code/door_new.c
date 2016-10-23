@@ -21,9 +21,6 @@
 #define turnLightOn 1
 #define turnLightOff 0
 
-
-SoftwareSerial BT(SerialrxPin, SerialtxPin); // RX, TX
-
 MFRC522 mfrc522(SS_PIN, RST_PIN);
 
 LiquidCrystal lcd(LCD_PIN);
@@ -52,8 +49,6 @@ int lightsIDS[6] = {
     A2, //Primeira luz da sala ID: 3 SL2
     A1, //Luz do quadro ID: 4 SL1
     4 //Ventilador ID: 5 SL8
-    //SL7 pin 3 problema
-    //SL5 pin A4 
 };
 
 int lightsStates[6] = {//0 = Ligado | 1 = Desligado  //  quarta lampada
@@ -168,10 +163,6 @@ void toogleLight(int lightID, int state) {
         if (lightID == lightsIDS[contadorGenerico]) {
             int currentState = lightsStates[contadorGenerico];
             lightsStates[contadorGenerico] = state;
-            if (state == currentState) {
-                //Mandou a luz ligar ou desligar mas ela ja esta ligada ou desligada
-                return;
-            } else {
                 Serial.print("l;");
                 Serial.print(lightID);
                 Serial.print("-");
@@ -185,7 +176,6 @@ void toogleLight(int lightID, int state) {
                     digitalWrite(lightID, turnLightOff);
                     Serial.print("off");
                 }
-            }
             Serial.print("\n");
         }
     }
@@ -268,9 +258,6 @@ void checkRFID() {
         return;
     }
 
-    //
-
-
     Serial.print("e;");
     for (byte i = 0; i < mfrc522.uid.size; i++) {
         Serial.print(mfrc522.uid.uidByte[i]);
@@ -286,72 +273,32 @@ void checkCommands() {
 
     if (Comp("o")) {
         abrePorta();
-    }
-
-    /*
-      Luzes
-     */
-    if (Comp("l140")) {
-        toogleLight(lightsIDS[0], 0);
-    }
-
-    if (Comp("l141")) {
-        toogleLight(lightsIDS[0], 1);
-    }
-
-    //15
-    if (Comp("l150")) {
-        toogleLight(lightsIDS[4], 0);
-    }
-
-    if (Comp("l151")) {
-        toogleLight(lightsIDS[4], 1);
-    }
-
-    //16
-    if (Comp("l161")) {
-        toogleLight(lightsIDS[3], 1);
-    }
-
-    if (Comp("l160")) {
-        toogleLight(lightsIDS[3], 0);
-    }
-
-    //17
-    if (Comp("l170")) {
-        toogleLight(lightsIDS[2], 0);
-    }
-
-    if (Comp("l171")) {
-        toogleLight(lightsIDS[2], 1);
-    }
-
-    //18
-    if (Comp("l180")) {
-        toogleLight(lightsIDS[1], 0);
-    }
-
-    if (Comp("l181")) {
-        toogleLight(lightsIDS[1], 1);
-    }
-
-    //19
-    if (Comp("l190")) {
-        toogleLight(lightsIDS[0], 0);
-    }
-
-    if (Comp("l191")) {
-        toogleLight(lightsIDS[0], 1);
-    }
-
-    if (Comp("ping")) {
+    } else if (Comp("ping")) {
         Serial.println("pong");
+    } else if (readCommand.length() > 0) {
+        if (readCommand.charAt(0) == 'l') {
+            //Comando de luz
+            int index = readCommand.charAt(1) - '0';
+            int state = readCommand.charAt(2) - '0';
+            if (state == 0) {
+                toogleLight(lightsIDS[index], turnLightOff);
+            } else {
+                toogleLight(lightsIDS[index], turnLightOn);
+            }
+            readCommand = "";
+        }
     }
+
+
+
 }
 
 
 /*
-
+ * 
+ *  KEYBOARD
+ * 
+ * 
  */
 int buttonPressed = 0;
 int recebeuComando = 0;
@@ -471,16 +418,17 @@ void checkCommandsKeyBoard() {
         int c = 0;
         if (allLightsON) {
             //Desliga todas as luzes
-            allLightsON = 0;
+            allLightsON = turnLightOff;
         } else {
             //Liga todas as luzes
-            allLightsON = 1;
+            allLightsON = turnLightOn;
         }
         for (c = 0; c < (sizeof (lightsIDS) / sizeof (int) - 1); c++) {
             toogleLight(lightsIDS[c], allLightsON);
         }
     }
+}
 
-
-
+void reset() {
+    setup();
 }

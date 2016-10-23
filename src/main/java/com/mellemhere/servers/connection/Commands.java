@@ -26,12 +26,12 @@ public class Commands {
 
     public boolean entry(String ID) {
         this.con.log(area, "Verificando o UID: " + ID, null);
-        //this.con.getStatistics().setLastScan(ID); TODO
         return this.con.getMysqlController().getUserController().hasUserUID(ID);
     }
 
     public String command(String command, String args) {
         con.log(area, "Novo comando para processar: " + command, null);
+        
         switch (command) {
             case "e":
                 /*
@@ -64,7 +64,7 @@ public class Commands {
                 break;
         }
 
-        return null;
+        return "";
     }
 
     public void sendCommand(Command cmd) {

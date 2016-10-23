@@ -30,8 +30,11 @@ import static spark.Spark.get;
  */
 public class HTTPController {
 
-    private final int HTTP_PORT = 4567;
-
+    private final int HTTP_PORT = 69;
+    
+    
+    //For deployment C:\Documents and Settings\Administrador\Desktop\Servidor
+    //private final String RESOURCES_FOLDER = "C:/Documents and Settings/Administrador/Desktop/Servidor/files";
     private final String RESOURCES_FOLDER = "D:/Games/GAVSystem2.0/files";
 
     private final String area = "HTTPSERVER";

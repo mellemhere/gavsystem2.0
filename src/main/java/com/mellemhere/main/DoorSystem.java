@@ -5,29 +5,15 @@
  */
 package com.mellemhere.main;
 
-import javafx.application.Application;
-import javafx.stage.Stage;
-
 /**
  *
  * @author aluno
  */
+public class DoorSystem {
 
-public class DoorSystem extends Application {
-
-
-
-    
-    @Override
-    public void start(Stage primaryStage) {
+    public static void main(String[] args) {
+        System.out.println("Iniciando....");
         Controller con = new Controller();
     }
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String[] args) {
-        launch(args);
-    }
-    
 }

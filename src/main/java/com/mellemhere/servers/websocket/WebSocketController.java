@@ -1,6 +1,5 @@
 package com.mellemhere.servers.websocket;
 
-import com.mellemhere.prop.lights.LightState;
 import com.mellemhere.main.Controller;
 import com.mellemhere.server.websocket.mObjects.DoorOpenedObject;
 import com.mellemhere.server.websocket.mObjects.EventObject;
@@ -160,9 +159,13 @@ public class WebSocketController {
     }
 
     private void sendWelcomeData(Session user) {
-        Connection c = this.getConnection(user);
-        if (c.getStatus() == ConnectionStatus.CONNECTED) {
-            c.getLightControl().broadcastAllToUser(user);
+        if (this.clients.containsKey(user)) {
+            Connection c = this.getConnection(user);
+            if (c.getStatus() == ConnectionStatus.CONNECTED) {
+                if (user.isOpen()) {
+                    c.getLightControl().broadcastAllToUser(user);
+                }
+            }
         }
     }
 

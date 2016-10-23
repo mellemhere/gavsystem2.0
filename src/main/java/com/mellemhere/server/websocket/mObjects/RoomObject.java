@@ -16,7 +16,7 @@ public class RoomObject {
     private String name;
     private String description;
     private int doorID;
-    private int comID;
+    private String comID;
     
     public int getId() {
         return id;
@@ -50,11 +50,11 @@ public class RoomObject {
         this.doorID = doorID;
     }
 
-    public int getComID() {
+    public String getComID() {
         return comID;
     }
 
-    public void setComID(int comID) {
+    public void setComID(String comID) {
         this.comID = comID;
     }
     

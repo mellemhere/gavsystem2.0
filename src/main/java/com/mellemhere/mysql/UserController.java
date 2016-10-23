@@ -25,12 +25,12 @@ public class UserController {
     }
 
     public boolean hasUserUID(String UID) {
-        return this.hasUserUID(Integer.parseInt(UID));
+        return this.hasUserUID(Long.parseLong(UID));
     }
 
-    public boolean hasUserUID(int UID) {
+    public boolean hasUserUID(long UID) {
         try {
-            return con.query("SELECT * FROM `" + DB_NAME + "` WHERE `uID`='" + UID + "'").next() != false;
+            return con.query("SELECT * FROM `" + DB_NAME + "` WHERE `uid`='" + UID + "'").next() != false;
         } catch (SQLException ex) {
             return false;
         }
@@ -38,7 +38,7 @@ public class UserController {
 
     public boolean hasUserMID(int MID) {
         try {
-            return con.query("SELECT * FROM `" + DB_NAME + "` WHERE `mID`='" + MID + "'").next() != false;
+            return con.query("SELECT * FROM `" + DB_NAME + "` WHERE `mid`='" + MID + "'").next() != false;
         } catch (SQLException ex) {
             ex.printStackTrace();
             return false;
@@ -54,8 +54,8 @@ public class UserController {
                 UserObject user = new UserObject();
                 user.setID(rs.getInt("id"));
                 user.setName(rs.getString("name"));
-                user.setmID(rs.getInt("mID"));
-                user.setuID(rs.getInt("uID"));
+                user.setmID(rs.getInt("mid"));
+                user.setuID(rs.getInt("uid"));
                 user.setPassword(rs.getString("password"));
                 user.setLevel(rs.getInt("level"));
                 user.setConfig(rs.getString("config"));
@@ -85,8 +85,8 @@ public class UserController {
             rs.next();
             user.setID(rs.getInt("id"));
             user.setName(rs.getString("name"));
-            user.setmID(rs.getInt("mID"));
-            user.setuID(rs.getInt("uID"));
+            user.setmID(rs.getInt("mid"));
+            user.setuID(rs.getInt("uid"));
             user.setPassword(rs.getString("password"));
             user.setLevel(rs.getInt("level"));
             user.setConfig(rs.getString("config"));
@@ -109,8 +109,8 @@ public class UserController {
             rs.next();
             user.setID(rs.getInt("id"));
             user.setName(rs.getString("name"));
-            user.setmID(rs.getInt("mID"));
-            user.setuID(rs.getInt("uID"));
+            user.setmID(rs.getInt("mid"));
+            user.setuID(rs.getInt("uid"));
             user.setPassword(rs.getString("password"));
             user.setLevel(rs.getInt("level"));
             user.setConfig(rs.getString("config"));

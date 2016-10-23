@@ -28,7 +28,7 @@ public class RealTimeData {
 
     private final Connection con;
 
-    private final Webcam webcam;
+    private Webcam webcam;
 
     private final boolean flipImage = true;
 
@@ -52,6 +52,8 @@ public class RealTimeData {
             if (!webcam.isOpen()) {
                 webcam.setViewSize(new Dimension(320, 240));
                 webcam.open();
+            }else{
+                this.webcam = null;
             }
         }
     }
@@ -96,7 +98,7 @@ public class RealTimeData {
     }
 
     private void broadcastWebcam() {
-        if (this.webcam == null) {
+        if (this.webcam == null || !webcam.isOpen()) {
             return;
         }
         this.send("webcam", new LogObject(getWebCamPicture()));

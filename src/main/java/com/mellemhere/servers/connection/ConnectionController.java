@@ -41,6 +41,7 @@ public class ConnectionController {
             connection.startLightsManagement();
 
             try {
+                
                 //STARTS CONNECTION WITH THE DOOR
                 SerialConnection serial = new SerialConnection(connection, room);
                 serial.startConnection();

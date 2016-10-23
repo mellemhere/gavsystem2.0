@@ -11,6 +11,8 @@ import com.mellemhere.server.websocket.mObjects.RoomObject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.LinkedHashSet;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -19,34 +21,53 @@ import java.io.OutputStream;
 public class SerialConnection extends Thread implements ConnectionInterface {
 
     private final ConnectionController con;
-    
+
     private final Connection connection;
-    
+
     private String area = "SERIAL-CONNECTION-";
-    private final int COM_ID;
+    private final String COM_ID;
+    private final int COM_INDEX;
     private final RoomObject room;
 
     private boolean running = false;
 
     private SerialPort comPort;
     private OutputStream out;
-    
+
     private final Commands cmd;
-    
+
+    private int getCOMPort(String nomeDaCom) {
+
+        LinkedHashSet<String> ports = new LinkedHashSet<>();
+
+        for (SerialPort serial : SerialPort.getCommPorts()) {
+            ports.add(serial.getSystemPortName());
+        }
+
+        int index = 0;
+        for (SerialPort serial : SerialPort.getCommPorts()) {
+            if (serial.getSystemPortName().equalsIgnoreCase(nomeDaCom)) {
+                return index;
+            } else {
+                index++;
+            }
+        }
+
+        return -1;
+    }
 
     public SerialConnection(Connection con, RoomObject room) throws ConnectionError {
-        
+
         this.con = con.getCcon();
         this.connection = con;
         this.COM_ID = room.getComID();
         this.room = room;
         this.area += room.getDoorID();
-        
+
         this.cmd = new Commands(this);
-        
-        if (SerialPort.getCommPorts().length == 0 || SerialPort.getCommPorts().length < this.COM_ID) {
-            throw new ConnectionError("Porta COM nao existente! " + this.COM_ID);
-        }
+
+        this.COM_INDEX = getCOMPort(this.COM_ID);
+
     }
 
     public boolean isRunning() {
@@ -64,6 +85,9 @@ public class SerialConnection extends Thread implements ConnectionInterface {
 
     @Override
     public void sendMessage(String message) {
+        if(message.equalsIgnoreCase("")){
+            return;
+        }
         try {
             out.write(message.getBytes());
         } catch (IOException ex) {
@@ -75,14 +99,24 @@ public class SerialConnection extends Thread implements ConnectionInterface {
     public void run() {
         this.running = true;
 
-        con.log(area, "Conectando a porta COM: " + this.COM_ID, null);
-        comPort = SerialPort.getCommPorts()[this.COM_ID];
+        con.log(area, "Conectando a porta " + this.COM_ID, null);
+        if (this.COM_INDEX == -1) {
+            con.log(area, "Porta " + this.COM_ID + " nao encontrada", null);
+
+            return;
+        }
+        comPort = SerialPort.getCommPorts()[this.COM_INDEX];
+        
         comPort.setBaudRate(115200);
         comPort.openPort();
         comPort.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, 100, 0);
+        
         InputStream in = comPort.getInputStream();
         this.out = comPort.getOutputStream();
-
+        while(!comPort.isOpen()){
+            comPort.openPort();
+            System.out.println("Tentando se conectar");
+        }
         try {
             String command = "";
             while (running) {
@@ -101,10 +135,11 @@ public class SerialConnection extends Thread implements ConnectionInterface {
             }
             in.close();
         } catch (Exception e) {
-            con.log(area, "Erro ao se comunicar com porta serial (COM" + this.COM_ID + ")", e);
+            e.printStackTrace();
+            con.log(area, "Erro ao se comunicar com porta serial (" + this.COM_ID + ")", e);
         }
 
-        con.log(area, "Fechando comunicacao com a porta (COM" + this.COM_ID + ")", null);
+        con.log(area, "Fechando comunicacao com a porta (" + this.COM_ID + ")", null);
         comPort.closePort();
     }
 
@@ -133,7 +168,7 @@ public class SerialConnection extends Thread implements ConnectionInterface {
         }
         if (message.contains(";")) {
             String[] commandArgs = message.split(";");
-            cmd.command(commandArgs[0], commandArgs[1]);
+            sendMessage(cmd.command(commandArgs[0], commandArgs[1]));
         } else {
             this.con.log(area, "Out of normal command recived: " + message, null);
         }
@@ -145,12 +180,12 @@ public class SerialConnection extends Thread implements ConnectionInterface {
     }
 
     @Override
-    public Commands getCommandHandler() {   
+    public Commands getCommandHandler() {
         return this.cmd;
     }
 
     @Override
     public Connection getConnection() {
-       return this.connection;
+        return this.connection;
     }
 }

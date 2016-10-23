@@ -39,6 +39,8 @@ public class MySQLController {
         if (!this.connect()) {
             System.out.println("NAO FOI POSSSIVEL CONECTAR AO SERVIDOR MYSQL");
             System.exit(0);
+        }else{
+            System.out.println("Conectado..");
         }
 
         this.userController = new UserController(this);
@@ -48,10 +50,12 @@ public class MySQLController {
 
     public boolean connect() {
         try {
+            System.out.println("Tentando se conectar com o servidor MYSQL");
             this.connection = DriverManager.getConnection("jdbc:mysql://localhost/" + this.DB_NAME + "?"
                     + "user=" + this.DB_USER);
             return true;
         } catch (SQLException ex) {
+            ex.printStackTrace();
             return false;
         }
     }
