@@ -32,15 +32,16 @@ public class UserController {
         try {
             return con.query("SELECT * FROM `" + DB_NAME + "` WHERE `uid`='" + UID + "'").next() != false;
         } catch (SQLException ex) {
+            con.getController().log(DB_NAME, "Erro com hasUserID", ex);
             return false;
         }
     }
 
-    public boolean hasUserMID(int MID) {
+    public boolean hasUserMID(long MID) {
         try {
             return con.query("SELECT * FROM `" + DB_NAME + "` WHERE `mid`='" + MID + "'").next() != false;
         } catch (SQLException ex) {
-            ex.printStackTrace();
+            con.getController().log(DB_NAME, "Erro com hasUserMID", ex);
             return false;
         }
     }
@@ -54,8 +55,8 @@ public class UserController {
                 UserObject user = new UserObject();
                 user.setID(rs.getInt("id"));
                 user.setName(rs.getString("name"));
-                user.setmID(rs.getInt("mid"));
-                user.setuID(rs.getInt("uid"));
+                user.setmID(rs.getLong("mid"));
+                user.setuID(rs.getLong("uid"));
                 user.setPassword(rs.getString("password"));
                 user.setLevel(rs.getInt("level"));
                 user.setConfig(rs.getString("config"));
@@ -63,6 +64,8 @@ public class UserController {
                 users.add(user);
             }
         } catch (SQLException ex) {
+            
+            con.getController().log(DB_NAME, "Erro com getUsers", ex);
             return null;
         }
 
@@ -77,7 +80,7 @@ public class UserController {
         return this.getUserByMID(Integer.parseInt(MID));
     }
 
-    public UserObject getUserByMID(int MID) {
+    public UserObject getUserByMID(long MID) {
         UserObject user = new UserObject();
 
         try {
@@ -85,12 +88,14 @@ public class UserController {
             rs.next();
             user.setID(rs.getInt("id"));
             user.setName(rs.getString("name"));
-            user.setmID(rs.getInt("mid"));
-            user.setuID(rs.getInt("uid"));
+            user.setmID(rs.getLong("mid"));
+            user.setuID(rs.getLong("uid"));
             user.setPassword(rs.getString("password"));
             user.setLevel(rs.getInt("level"));
             user.setConfig(rs.getString("config"));
         } catch (SQLException ex) {
+            
+            con.getController().log(DB_NAME, "Erro com getUsersMID", ex);
             return null;
         }
 
@@ -109,12 +114,14 @@ public class UserController {
             rs.next();
             user.setID(rs.getInt("id"));
             user.setName(rs.getString("name"));
-            user.setmID(rs.getInt("mid"));
-            user.setuID(rs.getInt("uid"));
+            user.setmID(rs.getLong("mid"));
+            user.setuID(rs.getLong("uid"));
             user.setPassword(rs.getString("password"));
             user.setLevel(rs.getInt("level"));
             user.setConfig(rs.getString("config"));
         } catch (SQLException ex) {
+            
+            con.getController().log(DB_NAME, "Erro com getUsersID", ex);
             return null;
         }
 
@@ -131,13 +138,15 @@ public class UserController {
 
             user.setID(rs.getInt("id"));
             user.setName(rs.getString("name"));
-            user.setmID(rs.getInt("mid"));
-            user.setuID(rs.getInt("uid"));
+            user.setmID(rs.getLong("mid"));
+            user.setuID(rs.getLong("uid"));
             user.setPassword(rs.getString("password"));
             user.setLevel(rs.getInt("level"));
             user.setConfig(rs.getString("config"));
 
         } catch (SQLException ex) {
+            
+            con.getController().log(DB_NAME, "Erro", ex);
             return null;
         }
 

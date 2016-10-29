@@ -9,6 +9,11 @@ $(document).on('click', '#opendoor', function () {
 
 $(document).on('click', '.light', function () {
     webSocket.send("l;" + $(this).attr('lid'));
+    if (!($(this).hasClass("btn-success"))) {
+        $(this).addClass("btn-success");
+    }else{
+        $(this).removeClass("btn-success");
+    }
 });
 
 var webSocket;
@@ -22,7 +27,7 @@ function connect() {
     };
     webSocket.onclose = function () {
         $('#loader-message').html("Conex&atilde;o perdida, tentando reconectar..");
-        $('.loader').show();
+       // $('.loader').show();
         setTimeout(function () {
             if (webSocket != null)
                 connect();

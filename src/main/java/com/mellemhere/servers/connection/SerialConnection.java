@@ -12,7 +12,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.LinkedHashSet;
-import javax.swing.JOptionPane;
 
 /**
  *
@@ -35,6 +34,8 @@ public class SerialConnection extends Thread implements ConnectionInterface {
     private OutputStream out;
 
     private final Commands cmd;
+
+    private boolean isConnected = false;
 
     private int getCOMPort(String nomeDaCom) {
 
@@ -85,9 +86,15 @@ public class SerialConnection extends Thread implements ConnectionInterface {
 
     @Override
     public void sendMessage(String message) {
-        if(message.equalsIgnoreCase("")){
+        if (message.equalsIgnoreCase("")) {
             return;
         }
+
+        if (!isConnected) {
+            this.con.log(area, "Nao 'e possivel mandar mensagem para cliente nao conectado!", null);
+            return;
+        }
+
         try {
             out.write(message.getBytes());
         } catch (IOException ex) {
@@ -102,22 +109,23 @@ public class SerialConnection extends Thread implements ConnectionInterface {
         con.log(area, "Conectando a porta " + this.COM_ID, null);
         if (this.COM_INDEX == -1) {
             con.log(area, "Porta " + this.COM_ID + " nao encontrada", null);
-
             return;
         }
         comPort = SerialPort.getCommPorts()[this.COM_INDEX];
-        
+
         comPort.setBaudRate(115200);
         comPort.openPort();
         comPort.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, 100, 0);
-        
+
         InputStream in = comPort.getInputStream();
         this.out = comPort.getOutputStream();
-        while(!comPort.isOpen()){
+        
+        con.log(area, "Tendando abrir conexao - " + this.area, null);
+        while (!comPort.isOpen()) {
             comPort.openPort();
-            System.out.println("Tentando se conectar");
         }
         try {
+            this.isConnected = true;
             String command = "";
             while (running) {
                 int bIn = in.read();
@@ -135,31 +143,15 @@ public class SerialConnection extends Thread implements ConnectionInterface {
             }
             in.close();
         } catch (Exception e) {
-            e.printStackTrace();
             con.log(area, "Erro ao se comunicar com porta serial (" + this.COM_ID + ")", e);
+            this.isConnected = false;
         }
 
         con.log(area, "Fechando comunicacao com a porta (" + this.COM_ID + ")", null);
+        this.isConnected = false;
         comPort.closePort();
     }
 
-    public void sendByteMessage(String message) {
-        try {
-            out.write(hexStringToByteArray(message));
-        } catch (IOException ex) {
-            this.con.log(area, "Nao foi possivel mandar mensagem para o cliente via serial!", ex);
-        }
-    }
-
-    public static byte[] hexStringToByteArray(String s) {
-        int len = s.length();
-        byte[] data = new byte[len / 2];
-        for (int i = 0; i < len; i += 2) {
-            data[i / 2] = (byte) ((Character.digit(s.charAt(i), 16) << 4)
-                    + Character.digit(s.charAt(i + 1), 16));
-        }
-        return data;
-    }
 
     @Override
     public void processCommand(String message) {
@@ -188,4 +180,10 @@ public class SerialConnection extends Thread implements ConnectionInterface {
     public Connection getConnection() {
         return this.connection;
     }
+
+    public boolean isIsConnected() {
+        return isConnected;
+    }
+    
+    
 }

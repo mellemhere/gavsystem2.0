@@ -30,18 +30,17 @@ import static spark.Spark.get;
  */
 public class HTTPController {
 
-    private final int HTTP_PORT = 69;
-    
-    
-    //For deployment C:\Documents and Settings\Administrador\Desktop\Servidor
-    //private final String RESOURCES_FOLDER = "C:/Documents and Settings/Administrador/Desktop/Servidor/files";
-    private final String RESOURCES_FOLDER = "D:/Games/GAVSystem2.0/files";
+    private final int HTTP_PORT = 80;
+
+    //For deployment use = "/home/sisgav/_servidor/files/";
+    //private final String RESOURCES_FOLDER = "D:/Games/GAVSystem2.0/files";
+    private final String RESOURCES_FOLDER = "/home/sisgav/_servidor/files/";
 
     private final String area = "HTTPSERVER";
 
     private Controller con;
 
-    HashMap<String, Integer> loggedClients = new HashMap<>();
+    HashMap<String, Long> loggedClients = new HashMap<>();
 
     Configuration config = new Configuration();
 
@@ -53,9 +52,18 @@ public class HTTPController {
 
         port(HTTP_PORT);
 
+        File dir = new File(RESOURCES_FOLDER);
+
+        if (!dir.exists()) {
+            System.out.println("A PASTAO NAO EXISTE :(");
+            dir.mkdir();
+            System.out.println(dir.getAbsolutePath());
+        }
+
         staticFiles.externalLocation(RESOURCES_FOLDER);
+
         try {
-            config.setDirectoryForTemplateLoading(new File(RESOURCES_FOLDER));
+            config.setDirectoryForTemplateLoading(dir);
         } catch (IOException ex) {
             this.con.log(area, "Pasta de arquivos nao encontrada", ex);
         }
@@ -133,6 +141,19 @@ public class HTTPController {
                         }
                     }
                 }
+            }
+
+            return getHTML(request, "login");
+        });
+
+        post("/items", (request, response) -> {
+
+            loggingNeeded(request.session().id(), response);
+
+            if (request.queryParams().contains("query")) {
+                String query = request.queryParams("query");
+
+                return con.getMysqlController().getItemsController().getItems(query).toString();
             }
 
             return getHTML(request, "login");
@@ -407,8 +428,8 @@ public class HTTPController {
         return loggedClients.containsKey(id);
     }
 
-    public int getSessionmID(Session session) {
-        return this.loggedClients.get(session.id());
+    public String getSessionmID(Session session) {
+        return this.loggedClients.get(session.id()).toString();
     }
 
     public void logout(Session client) {

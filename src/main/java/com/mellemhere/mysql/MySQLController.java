@@ -32,7 +32,9 @@ public class MySQLController {
     private final UserController userController;
     private final LogController logController;
     private final RoomController roomController;
-
+    
+    private final ItemsController itemsController;
+    
     public MySQLController(Controller con) {
         this.con = con;
 
@@ -46,6 +48,7 @@ public class MySQLController {
         this.userController = new UserController(this);
         this.logController = new LogController(this);
         this.roomController = new RoomController(this);
+        this.itemsController = new ItemsController(this); 
     }
 
     public boolean connect() {
@@ -55,11 +58,18 @@ public class MySQLController {
                     + "user=" + this.DB_USER);
             return true;
         } catch (SQLException ex) {
-            ex.printStackTrace();
+            
+            con.log("MYSQL", "Erro", ex);
             return false;
         }
     }
 
+    public ItemsController getItemsController() {
+        return itemsController;
+    }
+
+    
+    
     public RoomController getRoomController() {
         return roomController;
     }
@@ -87,7 +97,8 @@ public class MySQLController {
             Statement stmt = this.connection.createStatement();
             rs = stmt.executeQuery(query);
         } catch (SQLException ex) {
-            Logger.getLogger(MySQLController.class.getName()).log(Level.SEVERE, null, ex);
+            
+            con.log("MYSQL", "Erro", ex);
         }
 
         return rs;
@@ -98,7 +109,8 @@ public class MySQLController {
             Statement stmt = this.connection.createStatement();
             stmt.executeUpdate(query);
         } catch (SQLException ex) {
-            Logger.getLogger(MySQLController.class.getName()).log(Level.SEVERE, null, ex);
+           
+            con.log("MYSQL", "Erro", ex);
         }
     }
     
@@ -108,7 +120,8 @@ public class MySQLController {
             Statement stmt = this.connection.createStatement();
             stmt.execute(query);
         } catch (SQLException ex) {
-            Logger.getLogger(MySQLController.class.getName()).log(Level.SEVERE, null, ex);
+            
+            con.log("MYSQL", "Erro", ex);
         }
     }
 

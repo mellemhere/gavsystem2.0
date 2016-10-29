@@ -41,7 +41,8 @@ public class RoomController {
                 rooms.add(room);
             }
         } catch (SQLException ex) {
-            System.out.println(ex.getMessage());
+            
+            con.getController().log(DB_NAME, "Erro", ex);
             return null;
         }
 
@@ -71,6 +72,8 @@ public class RoomController {
 
             return room;
         } catch (SQLException ex) {
+            
+            con.getController().log(DB_NAME, "Erro", ex);
             return null;
         }
 

@@ -37,10 +37,14 @@ public class RealTimeData {
     private final WebSocketController wcon;
     private final int doorID;
 
+    private final boolean hasWebCam = false;
+
     public RealTimeData(Connection con) {
 
         this.con = con;
-        this.webcam = Webcam.getDefault();
+        if (hasWebCam) {
+            this.webcam = Webcam.getDefault();
+        }
         this.timer = new Timer();
 
         this.wcon = con.getCcon().getCon().getWebSocketController();
@@ -48,12 +52,15 @@ public class RealTimeData {
 
         con.getCcon().getCon().log("RealTimeData", "Iniciando broadcast de dados para a porta " + this.doorID, null);
 
-        if (this.webcam != null) {
-            if (!webcam.isOpen()) {
-                webcam.setViewSize(new Dimension(320, 240));
-                webcam.open();
-            }else{
-                this.webcam = null;
+        if (hasWebCam) {
+
+            if (this.webcam != null) {
+                if (!webcam.isOpen()) {
+                    webcam.setViewSize(new Dimension(320, 240));
+                    webcam.open();
+                } else {
+                    this.webcam = null;
+                }
             }
         }
     }
@@ -98,7 +105,10 @@ public class RealTimeData {
     }
 
     private void broadcastWebcam() {
-        if (this.webcam == null || !webcam.isOpen()) {
+        if (this.webcam == null) {
+            return;
+        }
+        if(!webcam.isOpen()){
             return;
         }
         this.send("webcam", new LogObject(getWebCamPicture()));

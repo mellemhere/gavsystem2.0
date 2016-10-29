@@ -134,8 +134,13 @@ public class WebSocketController {
             }
         } else {
             if (cmd.equalsIgnoreCase("id")) {
-                this.logClient(user, Integer.parseInt(args));
-                this.sendWelcomeData(user);
+                try {
+                    this.logClient(user, Integer.parseInt(args));
+                    this.sendWelcomeData(user);
+                } catch (Exception e) {
+                    con.log(area, "Nao foi possivel identificar pagina do usuario! ID:" + args, e);
+                }
+
             } else {
                 this.sendMessage(user, "auth");
             }

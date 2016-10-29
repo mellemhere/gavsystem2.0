@@ -14,7 +14,7 @@ public class UserObject {
     
     private int ID;
     private String name;
-    private int mID;
+    private long mID;
     private long uID;
     private String password;
     private int level;
@@ -36,11 +36,11 @@ public class UserObject {
         this.name = name;
     }
 
-    public int getmID() {
+    public long getmID() {
         return mID;
     }
 
-    public void setmID(int mID) {
+    public void setmID(long mID) {
         this.mID = mID;
     }
 
