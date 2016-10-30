@@ -116,8 +116,8 @@ public class Statistics_OLD {
         }
     }
 
-    public String getRunningTime() {
-        long millis = System.currentTimeMillis() - con.startTime;
+    /*public String getRunningTime() {
+        //long millis = System.currentTimeMillis() - con.startTime;
 
         if (statistics.has("uptime")) {
             long update = statistics.getLong("uptime");
@@ -134,7 +134,7 @@ public class Statistics_OLD {
                 - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millis)),
                 TimeUnit.MILLISECONDS.toSeconds(millis)
                 - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis)));
-    }
+    }*/
 
     public String getToText() {
         return statistics.toString();

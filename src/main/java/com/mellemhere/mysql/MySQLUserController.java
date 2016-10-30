@@ -11,7 +11,7 @@ import java.util.List;
  *
  * @author MellemHere
  */
-public class UserController {
+public class MySQLUserController {
 
     private final String DB_NAME = "gav_users";
 
@@ -19,7 +19,7 @@ public class UserController {
 
     private final PasswordManager pw;
 
-    public UserController(MySQLController con) {
+    public MySQLUserController(MySQLController con) {
         this.con = con;
         this.pw = new PasswordManager();
     }

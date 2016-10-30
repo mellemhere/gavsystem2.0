@@ -11,7 +11,7 @@ $(document).on('click', '.light', function () {
     webSocket.send("l;" + $(this).attr('lid'));
     if (!($(this).hasClass("btn-success"))) {
         $(this).addClass("btn-success");
-    }else{
+    } else {
         $(this).removeClass("btn-success");
     }
 });
@@ -27,7 +27,7 @@ function connect() {
     };
     webSocket.onclose = function () {
         $('#loader-message').html("Conex&atilde;o perdida, tentando reconectar..");
-       // $('.loader').show();
+        // $('.loader').show();
         setTimeout(function () {
             if (webSocket != null)
                 connect();
@@ -54,6 +54,12 @@ function newCommand(msg) {
             break;
         case "light" :
             alert(args.message);
+            break;
+        case "serverUptime" :
+            $("#serverUptime").html(args.uptime);
+            break;
+        case "uptime" :
+            $(".timealive").html(args.uptime);
             break;
         case "light_changed" :
             var lid = args.lightID;

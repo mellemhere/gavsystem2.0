@@ -21,7 +21,7 @@ public class SerialConnection extends Thread implements ConnectionInterface {
 
     private final ConnectionController con;
 
-    private final Connection connection;
+    private final Room connection;
 
     private String area = "SERIAL-CONNECTION-";
     private final String COM_ID;
@@ -57,7 +57,7 @@ public class SerialConnection extends Thread implements ConnectionInterface {
         return -1;
     }
 
-    public SerialConnection(Connection con, RoomObject room) throws ConnectionError {
+    public SerialConnection(Room con, RoomObject room) throws ConnectionError {
 
         this.con = con.getCcon();
         this.connection = con;
@@ -177,7 +177,7 @@ public class SerialConnection extends Thread implements ConnectionInterface {
     }
 
     @Override
-    public Connection getConnection() {
+    public Room getConnection() {
         return this.connection;
     }
 

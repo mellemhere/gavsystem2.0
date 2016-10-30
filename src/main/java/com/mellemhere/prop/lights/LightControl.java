@@ -6,7 +6,7 @@
 package com.mellemhere.prop.lights;
 
 import com.mellemhere.server.websocket.mObjects.LightObject;
-import com.mellemhere.servers.connection.Connection;
+import com.mellemhere.servers.connection.Room;
 import com.mellemhere.servers.connection.ConnectionStatus;
 import com.mellemhere.servers.websocket.WebSocketController;
 import java.util.HashMap;
@@ -22,10 +22,10 @@ public class LightControl {
 
     private final String LIGHT_CMD = "l";
 
-    private final Connection con;
+    private final Room con;
     private final WebSocketController wcon;
 
-    public LightControl(Connection con) {
+    public LightControl(Room con) {
         this.con = con;
         this.wcon = con.getCcon().getCon().getWebSocketController();
     }

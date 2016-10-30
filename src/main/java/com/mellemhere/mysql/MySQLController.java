@@ -12,9 +12,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 /**
  *
  * @author MellemHere
@@ -29,11 +26,12 @@ public class MySQLController {
     private Connection connection = null;
 
     //Instances
-    private final UserController userController;
-    private final LogController logController;
-    private final RoomController roomController;
+    private final MySQLUserController userController;
+    private final MySQLLogController logController;
+    private final MySQLRoomController roomController;
+    private final MySQLItemsController itemsController;
+    private final MySQLStatisticsController statisticsController; 
     
-    private final ItemsController itemsController;
     
     public MySQLController(Controller con) {
         this.con = con;
@@ -45,10 +43,11 @@ public class MySQLController {
             System.out.println("Conectado..");
         }
 
-        this.userController = new UserController(this);
-        this.logController = new LogController(this);
-        this.roomController = new RoomController(this);
-        this.itemsController = new ItemsController(this); 
+        this.userController = new MySQLUserController(this);
+        this.logController = new MySQLLogController(this);
+        this.roomController = new MySQLRoomController(this);
+        this.itemsController = new MySQLItemsController(this); 
+        this.statisticsController = new MySQLStatisticsController(this);
     }
 
     public boolean connect() {
@@ -64,13 +63,16 @@ public class MySQLController {
         }
     }
 
-    public ItemsController getItemsController() {
+    public MySQLItemsController getItemsController() {
         return itemsController;
     }
 
+    public MySQLStatisticsController getStatisticsController() {
+        return statisticsController;
+    }
+
     
-    
-    public RoomController getRoomController() {
+    public MySQLRoomController getRoomController() {
         return roomController;
     }
 
@@ -82,11 +84,11 @@ public class MySQLController {
         return this.con;
     }
 
-    public UserController getUserController() {
+    public MySQLUserController getUserController() {
         return userController;
     }
 
-    public LogController getLogController() {
+    public MySQLLogController getLogController() {
         return logController;
     }
 

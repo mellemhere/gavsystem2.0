@@ -10,12 +10,17 @@
     </ul>
     <p class="side-menu-title">Menu:</p>
     <ul>
+        <a href="/painel/sistema/items"><li>Items</li></a>
         <#if level == 5>
         <a href="/painel/sistema/usuarios"><li>Usuarios cadastrados</li></a>
         <a href="/painel/sistema/salas"><li>Salas cadastradas</li></a>
-        <a href="/painel/sistema/config"><li>Configuracoes</li></a>
+        <a href="#"><li>Configuracoes (Em breve)</li></a>
         </#if>
     </ul>
-    <p class="side-menu-title side-menu-status">Status do sistema: <span>Online</span></p>
+    <p class="side-menu-title side-menu-status">
+        Status do sistema: <span>Online</span>
+        <br>
+        Tempo vivo (Uptime): <span id="serverUptime">Carregando</span>
+    </p>
 </div>
 

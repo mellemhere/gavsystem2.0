@@ -10,13 +10,13 @@ package com.mellemhere.mysql;
  *
  * @author MellemHere
  */
-public class LogController {
+public class MySQLLogController {
 
     private final String DB_NAME = "gav_log";
 
     private MySQLController con;
 
-    public LogController(MySQLController con) {
+    public MySQLLogController(MySQLController con) {
         this.con = con;
     }
 }

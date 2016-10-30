@@ -5,11 +5,12 @@
  */
 package com.mellemhere.servers.websocket;
 
-import com.mellemhere.servers.connection.Connection;
+import com.mellemhere.servers.connection.Room;
 import java.awt.Dimension;
 
 import com.github.sarxos.webcam.Webcam;
 import com.mellemhere.server.websocket.mObjects.LogObject;
+import com.mellemhere.server.websocket.mObjects.UptimeObject;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
@@ -26,7 +27,7 @@ import javax.xml.bind.DatatypeConverter;
  */
 public class RealTimeData {
 
-    private final Connection con;
+    private final Room con;
 
     private Webcam webcam;
 
@@ -39,7 +40,7 @@ public class RealTimeData {
 
     private final boolean hasWebCam = false;
 
-    public RealTimeData(Connection con) {
+    public RealTimeData(Room con) {
 
         this.con = con;
         if (hasWebCam) {
@@ -66,21 +67,30 @@ public class RealTimeData {
     }
 
     public void start() {
-        if (this.webcam != null) {
-            timer.schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    broadcastUptime();
-                    broadcastStatus();
-                }
-            }, 0, 1000);
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                //UPDATE ROOM STATS
+                con.getStatistics().uptime();
+                con.getStatistics().energyConsumptionCost();
 
-            timer.schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    broadcastWebcam();
-                }
-            }, 0, 60);
+                //BROADCAST ROOM STATS
+                broadcastUptime();
+                broadcastServerUptime();
+                broadcastStatus();
+                broadcastEnergyConsumptionCost();
+            }
+        }, 0, 1000);
+        if (this.hasWebCam) {
+            if (this.webcam != null) {
+                timer.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        broadcastWebcam();
+                    }
+                }, 0, 120);
+
+            }
         }
     }
 
@@ -89,14 +99,18 @@ public class RealTimeData {
     }
 
     private void broadcastUptime() {
+        this.send("uptime", new UptimeObject(con.getFormatedUptime()));
+    }
 
+    private void broadcastServerUptime() {
+        this.send("serverUptime", new UptimeObject(con.getCcon().getCon().formatTime(con.getCcon().getCon().getUptime())));
     }
 
     private void broadcastLastEntry() {
 
     }
 
-    private void broadcastEnergyPrice() {
+    private void broadcastEnergyConsumptionCost() {
 
     }
 
@@ -108,7 +122,7 @@ public class RealTimeData {
         if (this.webcam == null) {
             return;
         }
-        if(!webcam.isOpen()){
+        if (!webcam.isOpen()) {
             return;
         }
         this.send("webcam", new LogObject(getWebCamPicture()));

@@ -18,9 +18,24 @@
 
                 <ul class="nav nav-left navbar-nav">
                     <li class="active"><a href="/painel/${room.doorid}">Inicio</a></li>
-                    <li><a href="/painel/${room.doorid}/agenda">Agendamentos </a></li>
-                    <li><a href="/painel/${room.doorid}/status">Estatisticas</a></li>
-                    <li><a href="/painel/${room.doorid}/lista-de-usuarios">Lista de usuarios</a></li>
+                    <li><a href="/painel/${room.doorid}">Agendamentos <span style="
+                                                                            position: absolute;
+                                                                            font-size: 10px;
+                                                                            text-align: center;
+                                                                            width: 73%;
+                                                                            "> (Em breve) </span></a></li>
+                    <li><a href="/painel/${room.doorid}">Estatisticas <span style="
+                                                                            position: absolute;
+                                                                            font-size: 10px;
+                                                                            text-align: center;
+                                                                            width: 73%;
+                                                                            "> (Em breve) </span></a></li>
+                    <li><a href="/painel/${room.doorid}">Lista de usuarios <span style="
+                                                                                 position: absolute;
+                                                                                 font-size: 10px;
+                                                                                 text-align: center;
+                                                                                 width: 73%;
+                                                                                 "> (Em breve) </span></a></li>
                     <#if level == 5>
                     <li><a href="/painel/${room.doorid}/config">Configuracoes</a></li>
                     </#if>
@@ -88,7 +103,10 @@
                                 </tbody>
                             </table>
                         </div>
-
+                        <a href="/painel/sistema/items" style="
+                           position: absolute;
+                           top: 46px;
+                           right: 16px;">Ver todos os items</a>
                         <script>
 
                             $('#almoxinput').on('keyup', function () {
@@ -323,7 +341,10 @@
         </div>
 
         <script>
-            var doorID = ${room.doorid};</script>
+            var doorID = ${
+                room.doorid
+            }
+            ;</script>
         <script src="/js/socket.js"></script>
 
     </body>

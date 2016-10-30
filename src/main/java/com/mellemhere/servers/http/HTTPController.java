@@ -30,11 +30,11 @@ import static spark.Spark.get;
  */
 public class HTTPController {
 
-    private final int HTTP_PORT = 80;
+    private final int HTTP_PORT = 8080;
 
     //For deployment use = "/home/sisgav/_servidor/files/";
-    //private final String RESOURCES_FOLDER = "D:/Games/GAVSystem2.0/files";
-    private final String RESOURCES_FOLDER = "/home/sisgav/_servidor/files/";
+    private final String RESOURCES_FOLDER = "D:/Games/GAVSystem2.0/files";
+    //private final String RESOURCES_FOLDER = "/home/sisgav/_servidor/files/";
 
     private final String area = "HTTPSERVER";
 
@@ -372,7 +372,23 @@ public class HTTPController {
 
             return getHTML(request, "system/userlist");
         });
+        
+        get("/painel/sistema/items", (request, response) -> {
+            loggingNeeded(request.session().id(), response);
 
+            this.addAllToMap(request, con.objectToMap(con.getMysqlController().getUserController().getUserByMID(getSessionmID(request.session()))));
+
+            this.addAllToMap(request, con.addObjectAsChildMap(this.getMap(request),
+                    "rooms",
+                    con.getMysqlController().getRoomController().getRooms().toArray()));
+
+            this.addAllToMap(request, con.addObjectAsChildMap(this.getMap(request),
+                    "items",
+                    con.getMysqlController().getItemsController().getItems().toArray()));
+
+            return getHTML(request, "system/items");
+        });
+        
         get("/painel/sistema/salas", (request, response) -> {
             loggingNeeded(request.session().id(), response);
 

@@ -16,7 +16,7 @@ public interface ConnectionInterface {
     public void startConnection();
     public void stopConnection();
     public Controller getController();
-    public Connection getConnection();
+    public Room getConnection();
     public void sendMessage(String message);
     public void processCommand(String cmd);
     public Commands getCommandHandler();

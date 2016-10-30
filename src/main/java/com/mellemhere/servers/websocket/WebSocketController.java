@@ -5,7 +5,7 @@ import com.mellemhere.server.websocket.mObjects.DoorOpenedObject;
 import com.mellemhere.server.websocket.mObjects.EventObject;
 import com.mellemhere.server.websocket.mObjects.LastEntryObject;
 import com.mellemhere.servers.connection.Command;
-import com.mellemhere.servers.connection.Connection;
+import com.mellemhere.servers.connection.Room;
 import com.mellemhere.servers.connection.ConnectionStatus;
 import java.io.IOException;
 import java.util.HashMap;
@@ -116,7 +116,7 @@ public class WebSocketController {
         String args = fullcmd.split(";")[1];
 
         if (isLogged(user)) {
-            Connection c = this.getConnection(user);
+            Room c = this.getConnection(user);
             if (c.getStatus() == ConnectionStatus.CONNECTED) {
                 switch (cmd) {
                     case "o":
@@ -159,13 +159,13 @@ public class WebSocketController {
         return this.clients.keySet().contains(user);
     }
 
-    private Connection getConnection(Session user) {
+    private Room getConnection(Session user) {
         return con.getConnectionController().getConnection(this.clients.get(user));
     }
 
     private void sendWelcomeData(Session user) {
         if (this.clients.containsKey(user)) {
-            Connection c = this.getConnection(user);
+            Room c = this.getConnection(user);
             if (c.getStatus() == ConnectionStatus.CONNECTED) {
                 if (user.isOpen()) {
                     c.getLightControl().broadcastAllToUser(user);

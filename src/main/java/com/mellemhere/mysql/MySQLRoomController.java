@@ -15,12 +15,12 @@ import java.util.List;
  *
  * @author MellemHere
  */
-public class RoomController {
+public class MySQLRoomController {
 
     private final String DB_NAME = "gav_rooms";
     MySQLController con;
 
-    public RoomController(MySQLController con) {
+    public MySQLRoomController(MySQLController con) {
         this.con = con;
     }
 

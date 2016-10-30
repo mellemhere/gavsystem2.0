@@ -19,6 +19,7 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.json.JSONObject;
@@ -28,16 +29,15 @@ public class Controller {
     private MySQLController mysqlController;
 
    // private DataBase database;
-
     private HTTPController httpController;
     private WebSocketController webSocketController;
-    
+
     private ConnectionController connectionController;
-    
+
     private String LogBuffer = "";
     //private Statistics satistics;
-   // private EntryLog entryLog;
-    public long startTime;
+    // private EntryLog entryLog;
+    public long SYSTEM_STARTUP_TIME;
 
     private LightState_OLD light;
 
@@ -49,17 +49,9 @@ public class Controller {
     }
 
     public void start() {
-        this.startTime = System.currentTimeMillis();
+        this.SYSTEM_STARTUP_TIME = System.currentTimeMillis();
         this.mysqlController = new MySQLController(this);
-        //this.database = new DataBase(this);
-        //this.entryLog = new EntryLog(this);
-       // this.satistics = new Statistics(this);
     }
-
-   /* public DataBase getDatabase() {
-        return database;
-    }*/
-
 
     public LightState_OLD getLight() {
         return light;
@@ -81,8 +73,6 @@ public class Controller {
         return connectionController;
     }
 
-    
-    
     private void startServers() {
         //WEBSOCKET SERVER
         this.webSocketController = new WebSocketController(this);
@@ -90,11 +80,11 @@ public class Controller {
         //HTTP SERVER
         this.httpController = new HTTPController(this, this.webSocketController);
         this.httpController.open();
-        
+
         //STARTS ALL THE CONNECTIONS
         this.connectionController = new ConnectionController(this);
         this.connectionController.openAll();
-        
+
     }
 
     public LightCon_OLD getLightController() {
@@ -122,9 +112,8 @@ public class Controller {
     }
 
     /*public Statistics getStatistics() {
-        return this.satistics;
-    }*/
-
+     return this.satistics;
+     }*/
     public String getLogBuffer() {
         if (this.LogBuffer.length() > 10000) {
             this.LogBuffer = "";
@@ -132,14 +121,11 @@ public class Controller {
         return this.LogBuffer;
     }
 
-
-
     /*public EntryLog getEntryLog() {
-        return entryLog;
-    }*/
-
+     return entryLog;
+     }*/
     public void restart() {
-       //TODO
+        //TODO
     }
 
     public void stop() {
@@ -226,6 +212,19 @@ public class Controller {
             one.put(key, second.get(key));
         }
         return one;
+    }
+
+    public long getUptime() {
+        return System.currentTimeMillis() - SYSTEM_STARTUP_TIME;
+    }
+
+    public String formatTime(long timeInMS) {
+        return String.format("%02d:%02d:%02d",
+                TimeUnit.MILLISECONDS.toHours(timeInMS),
+                TimeUnit.MILLISECONDS.toMinutes(timeInMS)
+                - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(timeInMS)),
+                TimeUnit.MILLISECONDS.toSeconds(timeInMS)
+                - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(timeInMS)));
     }
 
 }

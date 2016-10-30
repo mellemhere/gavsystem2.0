@@ -19,7 +19,7 @@ public class ConnectionController {
     private final Controller con;
 
     //ROOMID, CONNECTION
-    HashMap<Integer, Connection> connections = new HashMap<>();
+    HashMap<Integer, Room> rooms = new HashMap<>();
 
     public ConnectionController(Controller con) {
         this.con = con;
@@ -29,37 +29,33 @@ public class ConnectionController {
         con.log(area, "Abrindo todas as conecoes", null);
 
         con.getMysqlController().getRoomController().getRooms().forEach((room) -> {
-            Connection connection = new Connection(this);
+            
+            Room roomc = new Room(room, this);
 
-            connection.setStatus(ConnectionStatus.CONNECTING);
-            connection.setRoom(room);
+            roomc.setStatus(ConnectionStatus.CONNECTING);
 
-            //STARTS TO BROADCAST STATUS OF THE DOOR
-            connection.startRealTimeData();
-
-            //STARTS TO MANAGE LIGHTS
-            connection.startLightsManagement();
-
+            roomc.start();
+            
             try {
                 
                 //STARTS CONNECTION WITH THE DOOR
-                SerialConnection serial = new SerialConnection(connection, room);
+                SerialConnection serial = new SerialConnection(roomc, room);
                 serial.startConnection();
-                connection.setConnection(serial);
-                connection.setStatus(ConnectionStatus.CONNECTED);
+                roomc.setConnection(serial);
+                roomc.setStatus(ConnectionStatus.CONNECTED);
 
             } catch (Exception e) {
                 con.log(area, "Nao foi possivel abrir conecao com a porta " + room.getDoorID(), e);
-                connection.setStatus(ConnectionStatus.FAILED);
+                roomc.setStatus(ConnectionStatus.FAILED);
             }
-            this.connections.put(room.getId(), connection);
+            this.rooms.put(room.getId(), roomc);
         });
     }
 
     public void reconnect(RoomObject room) {
-        Connection connection = new Connection(this);
+        Room connection = new Room(room, this);
+        
         connection.setStatus(ConnectionStatus.CONNECTING);
-        connection.setRoom(room);
 
         try {
             SerialConnection serial = new SerialConnection(connection, room);
@@ -70,7 +66,7 @@ public class ConnectionController {
             connection.setStatus(ConnectionStatus.FAILED);
         }
 
-        this.connections.put(room.getId(), connection);
+        this.rooms.put(room.getId(), connection);
     }
 
     void log(String area, String string, Exception object) {
@@ -82,12 +78,12 @@ public class ConnectionController {
     }
 
     public void setDesconnected(RoomObject room) {
-        Connection c = this.connections.get(room.getId());
+        Room c = this.rooms.get(room.getId());
         c.setStatus(ConnectionStatus.FAILED);
     }
 
-    public Connection getConnection(int doorID) {
-        for (Connection connection : this.connections.values()) {
+    public Room getConnection(int doorID) {
+        for (Room connection : this.rooms.values()) {
             if (connection.getRoom().getDoorID() == doorID) {
                 return connection;
             }

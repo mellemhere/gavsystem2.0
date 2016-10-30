@@ -1,6 +1,6 @@
 package com.mellemhere.mysql;
 
-import com.mellemhere.server.websocket.mObjects.UserObject;
+import com.mellemhere.server.websocket.mObjects.ItemObject;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -12,13 +12,13 @@ import org.json.JSONObject;
  *
  * @author MellemHere
  */
-public class ItemsController {
+public class MySQLItemsController {
 
     private final String DB_NAME = "gav_items";
 
     private final MySQLController con;
 
-    public ItemsController(MySQLController con) {
+    public MySQLItemsController(MySQLController con) {
         this.con = con;
 
     }
@@ -35,6 +35,30 @@ public class ItemsController {
                 item.put("area", rs.getString("AREA"));
                 item.put("box", rs.getString("CAIXA"));
                 items.put(item);
+            }
+        } catch (SQLException ex) {
+
+            con.getController().log(DB_NAME, "Erro com getItems", ex);
+            return null;
+        }
+
+        return items;
+    }
+
+    public List<ItemObject> getItems() {
+        List<ItemObject> items = new ArrayList<>();
+
+        try {
+            //SELECT * FROM pet WHERE name LIKE '%w%';
+            ResultSet rs = con.query("SELECT * FROM `" + DB_NAME + "` WHERE 1");
+            while (rs.next()) {
+
+                ItemObject item = new ItemObject();
+
+                item.setName(rs.getString("NOME"));
+                item.setArea(rs.getString("AREA"));
+                item.setBox(rs.getString("CAIXA"));
+                items.add(item);
             }
         } catch (SQLException ex) {
 
