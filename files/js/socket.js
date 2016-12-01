@@ -61,6 +61,13 @@ function newCommand(msg) {
         case "uptime" :
             $(".timealive").html(args.uptime);
             break;
+            
+        case "consumo" :
+            $(".consumoDeEnergiaPreco").html(args.message + " reais");
+            break;
+        case "consumoW" :
+            $(".consumoDeEnergia").html(args.message + " watts");
+            break;
         case "light_changed" :
             var lid = args.lightID;
             var state = args.lightState;

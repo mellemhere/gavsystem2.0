@@ -1,10 +1,12 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package com.mellemhere.mysql;
 
-import com.mellemhere.server.websocket.mObjects.ItemObject;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.json.JSONArray;
@@ -14,29 +16,27 @@ import org.json.JSONObject;
  *
  * @author MellemHere
  */
-public class MySQLItemsController {
+public class MySQLCurrentController {
 
-    private final String DB_NAME = "gav_items";
+    private final String DB_NAME = "gav_current";
 
     private final MySQLController con;
 
-    public MySQLItemsController(MySQLController con) {
+    public MySQLCurrentController(MySQLController con) {
         this.con = con;
-
     }
 
-    public JSONArray getItems(String query) {
-        JSONArray items = new JSONArray();
+    public JSONArray getItems() {
+        JSONArray data = new JSONArray();
         ResultSet rs = null;
         try {
             //SELECT * FROM pet WHERE name LIKE '%w%';
-            rs = con.query("SELECT * FROM `" + DB_NAME + "` WHERE `NOME` LIKE  '%" + query + "%' LIMIT 30");
+            rs = con.query("SELECT * FROM `" + DB_NAME + "` WHERE 1 ORDER BY time DESC");
             while (rs.next()) {
-                JSONObject item = new JSONObject();
-                item.put("name", rs.getString("NOME"));
-                item.put("area", rs.getString("AREA"));
-                item.put("box", rs.getString("CAIXA"));
-                items.put(item);
+                JSONObject dataHolder = new JSONObject();
+                dataHolder.put("x", rs.getTimestamp("time"));
+                dataHolder.put("y", rs.getFloat("current"));
+                data.put(dataHolder);
             }
         } catch (SQLException ex) {
             con.getController().log(DB_NAME, "Erro com getItems", ex);
@@ -52,25 +52,23 @@ public class MySQLItemsController {
             }
         }
 
-        return items;
+        return data;
     }
 
-    public List<ItemObject> getItems() {
-        List<ItemObject> items = new ArrayList<>();
+    public JSONObject getItemsBad() {
+        JSONObject data = new JSONObject();
+        JSONArray x = new JSONArray();
+
+        JSONArray y = new JSONArray();
         ResultSet rs = null;
         try {
-            rs = con.query("SELECT * FROM `" + DB_NAME + "` WHERE 1");
+            //SELECT * FROM pet WHERE name LIKE '%w%';
+            rs = con.query("SELECT * FROM `" + DB_NAME + "` WHERE 1 ORDER BY time DESC");
             while (rs.next()) {
-
-                ItemObject item = new ItemObject();
-
-                item.setName(rs.getString("NOME"));
-                item.setArea(rs.getString("AREA"));
-                item.setBox(rs.getString("CAIXA"));
-                items.add(item);
+                x.put(rs.getTimestamp("time"));
+                y.put(rs.getFloat("current"));
             }
         } catch (SQLException ex) {
-
             con.getController().log(DB_NAME, "Erro com getItems", ex);
             return null;
         } finally {
@@ -83,8 +81,15 @@ public class MySQLItemsController {
                 }
             }
         }
+        data.put("x", x);
+        data.put("y", y);
+        
+        return data;
+    }
 
-        return items;
+    public void put(String floats) {
+        float data = Float.parseFloat(floats);
+        con.update("INSERT INTO `gav_current`(`current`) VALUES ('" + data + "')");
     }
 
 }

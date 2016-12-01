@@ -6,6 +6,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -48,9 +50,9 @@ public class MySQLUserController {
 
     public List<UserObject> getUsers() {
         List<UserObject> users = new ArrayList<>();
-
+        ResultSet rs = null;
         try {
-            ResultSet rs = con.query("SELECT * FROM `" + DB_NAME + "` WHERE 1");
+            rs = con.query("SELECT * FROM `" + DB_NAME + "` WHERE 1");
             while (rs.next()) {
                 UserObject user = new UserObject();
                 user.setID(rs.getInt("id"));
@@ -64,9 +66,18 @@ public class MySQLUserController {
                 users.add(user);
             }
         } catch (SQLException ex) {
-            
+
             con.getController().log(DB_NAME, "Erro com getUsers", ex);
             return null;
+        } finally {
+            if (rs != null) {
+                try {
+                    rs.close();
+                } catch (SQLException ex) {
+                    con.getController().log(DB_NAME, "Erro com getUsers", ex);
+                    Logger.getLogger(MySQLUserController.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
         }
 
         return users;
@@ -82,9 +93,9 @@ public class MySQLUserController {
 
     public UserObject getUserByMID(long MID) {
         UserObject user = new UserObject();
-
+        ResultSet rs = null;
         try {
-            ResultSet rs = con.query("SELECT * FROM `" + DB_NAME + "` WHERE `mid`='" + MID + "'");
+            rs = con.query("SELECT * FROM `" + DB_NAME + "` WHERE `mid`='" + MID + "'");
             rs.next();
             user.setID(rs.getInt("id"));
             user.setName(rs.getString("name"));
@@ -94,9 +105,17 @@ public class MySQLUserController {
             user.setLevel(rs.getInt("level"));
             user.setConfig(rs.getString("config"));
         } catch (SQLException ex) {
-            
             con.getController().log(DB_NAME, "Erro com getUsersMID", ex);
             return null;
+        } finally {
+            if (rs != null) {
+                try {
+                    rs.close();
+                } catch (SQLException ex) {
+                    con.getController().log(DB_NAME, "Erro com getUserByMID", ex);
+                    Logger.getLogger(MySQLUserController.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
         }
 
         return user;
@@ -108,9 +127,9 @@ public class MySQLUserController {
 
     public UserObject getUserByID(int ID) {
         UserObject user = new UserObject();
-
+        ResultSet rs = null;
         try {
-            ResultSet rs = con.query("SELECT * FROM `" + DB_NAME + "` WHERE `id`='" + ID + "'");
+            rs = con.query("SELECT * FROM `" + DB_NAME + "` WHERE `id`='" + ID + "'");
             rs.next();
             user.setID(rs.getInt("id"));
             user.setName(rs.getString("name"));
@@ -120,9 +139,18 @@ public class MySQLUserController {
             user.setLevel(rs.getInt("level"));
             user.setConfig(rs.getString("config"));
         } catch (SQLException ex) {
-            
+
             con.getController().log(DB_NAME, "Erro com getUsersID", ex);
             return null;
+        } finally {
+            if (rs != null) {
+                try {
+                    rs.close();
+                } catch (SQLException ex) {
+                    con.getController().log(DB_NAME, "Erro com getUserByMID", ex);
+                    Logger.getLogger(MySQLUserController.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
         }
 
         return user;
@@ -130,10 +158,10 @@ public class MySQLUserController {
 
     public UserObject getUserByUID(int UID) {
         UserObject user = new UserObject();
-
+        ResultSet rs = null;
         try {
 
-            ResultSet rs = con.query("SELECT * FROM `" + DB_NAME + "` WHERE `uid`='" + UID + "'");
+            rs = con.query("SELECT * FROM `" + DB_NAME + "` WHERE `uid`='" + UID + "'");
             rs.next();
 
             user.setID(rs.getInt("id"));
@@ -145,9 +173,18 @@ public class MySQLUserController {
             user.setConfig(rs.getString("config"));
 
         } catch (SQLException ex) {
-            
+
             con.getController().log(DB_NAME, "Erro", ex);
             return null;
+        } finally {
+            if (rs != null) {
+                try {
+                    rs.close();
+                } catch (SQLException ex) {
+                    con.getController().log(DB_NAME, "Erro com getUserByUID", ex);
+                    Logger.getLogger(MySQLUserController.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
         }
 
         return user;

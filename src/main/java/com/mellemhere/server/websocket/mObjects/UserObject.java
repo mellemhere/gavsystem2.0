@@ -11,7 +11,6 @@ package com.mellemhere.server.websocket.mObjects;
  */
 public class UserObject {
     
-    
     private int ID;
     private String name;
     private long mID;

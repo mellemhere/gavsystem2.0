@@ -29,20 +29,27 @@ public class ConnectionController {
         con.log(area, "Abrindo todas as conecoes", null);
 
         con.getMysqlController().getRoomController().getRooms().forEach((room) -> {
-            
+
             Room roomc = new Room(room, this);
 
             roomc.setStatus(ConnectionStatus.CONNECTING);
 
             roomc.start();
-            
+
             try {
-                
+
                 //STARTS CONNECTION WITH THE DOOR
-                SerialConnection serial = new SerialConnection(roomc, room);
-                serial.startConnection();
-                roomc.setConnection(serial);
-                roomc.setStatus(ConnectionStatus.CONNECTED);
+                if (room.getComID().contains(".")) {
+                    System.out.println("[Server socket] Esperando por conexoes");
+                    SocketConnection serial = new SocketConnection(roomc, room);
+                    roomc.setConnection(serial);
+                    roomc.setStatus(ConnectionStatus.CONNECTED);
+                } else {
+                    SerialConnection serial = new SerialConnection(roomc, room);
+                    serial.startConnection();
+                    roomc.setConnection(serial);
+                    roomc.setStatus(ConnectionStatus.CONNECTED);
+                }
 
             } catch (Exception e) {
                 con.log(area, "Nao foi possivel abrir conecao com a porta " + room.getDoorID(), e);
@@ -54,7 +61,7 @@ public class ConnectionController {
 
     public void reconnect(RoomObject room) {
         Room connection = new Room(room, this);
-        
+
         connection.setStatus(ConnectionStatus.CONNECTING);
 
         try {
@@ -91,4 +98,12 @@ public class ConnectionController {
         return null;
     }
 
+    public HashMap<Integer, Room> getRooms() {
+        return rooms;
+    }
+
+    
+    
+    
+    
 }

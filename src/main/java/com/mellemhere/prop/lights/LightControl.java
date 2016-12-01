@@ -20,6 +20,8 @@ public class LightControl {
 
     private final HashMap<String, LightState> lights = new HashMap<>();
 
+    private final HashMap<String, Long> lightsTime = new HashMap<>();
+
     private final String LIGHT_CMD = "l";
 
     private final Room con;
@@ -34,9 +36,15 @@ public class LightControl {
         if (this.lights.containsKey(ID)) {
             if (this.lights.get(ID) != state) {
                 this.lights.put(ID, state);
+                if (state == LightState.OFF) {
+                    lightsTime.remove(ID);
+                } else {
+                    lightsTime.put(ID, System.currentTimeMillis());
+                }
             }
         } else {
             this.lights.put(ID, LightState.ON);
+            lightsTime.put(ID, System.currentTimeMillis());
         }
 
         this.broadcast(ID);
@@ -46,11 +54,14 @@ public class LightControl {
         if (this.lights.containsKey(ID)) {
             if (isON(ID)) {
                 this.lights.put(ID, LightState.OFF);
+                lightsTime.remove(ID);
             } else {
                 this.lights.put(ID, LightState.ON);
+                lightsTime.put(ID, System.currentTimeMillis());
             }
         } else {
             this.lights.put(ID, LightState.ON);
+            lightsTime.put(ID, System.currentTimeMillis());
         }
 
         this.broadcast(ID);
@@ -97,10 +108,14 @@ public class LightControl {
         return lights;
     }
 
+    public HashMap<String, Long> getLightsTimes() {
+        return lightsTime;
+    }
+    
     public void broadcastAllToUser(Session client) {
         this.lights.forEach((lightID, state) -> {
             if (state == LightState.ON) {
-                this.wcon.sendMessage(client,  "light_changed", new LightObject(lightID, "on"));
+                this.wcon.sendMessage(client, "light_changed", new LightObject(lightID, "on"));
             } else {
                 this.wcon.sendMessage(client, "light_changed", new LightObject(lightID, "off"));
             }

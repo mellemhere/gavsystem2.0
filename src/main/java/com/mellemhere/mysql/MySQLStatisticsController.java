@@ -3,6 +3,8 @@ package com.mellemhere.mysql;
 import com.mellemhere.prop.statistics.StatisticsObject;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class MySQLStatisticsController {
 
@@ -29,21 +31,37 @@ public class MySQLStatisticsController {
 
     public StatisticsObject get(int roomID, String key) {
         StatisticsObject so = new StatisticsObject();
-        try {
-            ResultSet rs = con.query("SELECT * FROM `" + DB_NAME + "` WHERE `name`='" + key + "' AND `scope`='" + roomID + "'");
-            rs.next();
+        ResultSet rs = null;
 
+        try {
+            rs = con.query("SELECT * FROM `" + DB_NAME + "` WHERE `name`='" + key + "' AND `scope`='" + roomID + "'");
+            rs.next();
+            
             so.setId(rs.getInt("id"));
+            so.setName(rs.getString("name"));
+            if(rs.getString("name") == null){
+                System.out.println("NULLO");
+            }
             so.setName(rs.getString("name"));
             so.setScope(rs.getInt("scope"));
             so.setValue(rs.getString("value"));
 
             return so;
+            
         } catch (SQLException ex) {
-            con.getController().log(DB_NAME, "Erro", ex);
-
+            con.getController().log(DB_NAME, "Erro1", ex);
             return null;
+        } finally {
+            if (rs != null) {
+                try {
+                    rs.close();
+                } catch (SQLException ex) {
+                    con.getController().log(DB_NAME, "Erro com get4", ex);
+                    Logger.getLogger(MySQLUserController.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
         }
+
     }
 
     public void set(int roomID, String key, int value) {
@@ -60,12 +78,13 @@ public class MySQLStatisticsController {
 
     public void set(int roomID, String key, Object valueInsert) {
         String value;
+        
         if (valueInsert instanceof String) {
             value = (String) valueInsert;
         } else {
             value = String.valueOf(valueInsert);
         }
-        
+
         try {
             if (hasStatistic(roomID, key)) {
                 //UPDATE
@@ -82,16 +101,27 @@ public class MySQLStatisticsController {
             }
 
         } catch (Exception ex) {
-            con.getController().log(DB_NAME, "Erro", ex);
+            ex.printStackTrace();
+            con.getController().log(DB_NAME, "Erro2 aqui", ex);
         }
     }
 
     public boolean hasStatistic(int roomID, String key) {
+        ResultSet rs = null;
         try {
-            return con.query("SELECT * FROM `" + DB_NAME + "` WHERE `scope`='" + roomID + "' AND `name`='" + key + "'").next() != false;
+            rs = con.query("SELECT * FROM `" + DB_NAME + "` WHERE `scope`='" + roomID + "' AND `name`='" + key + "'");
+            return rs.next() != false;
         } catch (SQLException ex) {
-            con.getController().log(DB_NAME, "Erro com hasUserID", ex);
+            con.getController().log(DB_NAME, "Erro com hasUserID3", ex);
             return false;
+        }finally{
+            if(rs != null){
+                try {
+                    rs.close();
+                } catch (SQLException ex) {
+                    Logger.getLogger(MySQLStatisticsController.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
         }
     }
 

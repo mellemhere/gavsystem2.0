@@ -18,24 +18,7 @@
 
                 <ul class="nav nav-left navbar-nav">
                     <li class="active"><a href="/painel/${room.doorid}">Inicio</a></li>
-                    <li><a href="/painel/${room.doorid}">Agendamentos <span style="
-                                                                            position: absolute;
-                                                                            font-size: 10px;
-                                                                            text-align: center;
-                                                                            width: 73%;
-                                                                            "> (Em breve) </span></a></li>
-                    <li><a href="/painel/${room.doorid}">Estatisticas <span style="
-                                                                            position: absolute;
-                                                                            font-size: 10px;
-                                                                            text-align: center;
-                                                                            width: 73%;
-                                                                            "> (Em breve) </span></a></li>
-                    <li><a href="/painel/${room.doorid}">Lista de usuarios <span style="
-                                                                                 position: absolute;
-                                                                                 font-size: 10px;
-                                                                                 text-align: center;
-                                                                                 width: 73%;
-                                                                                 "> (Em breve) </span></a></li>
+                    <li><a href="/painel/${room.doorid}/agenda">Agendamentos</a></li>
                     <#if level == 5>
                     <li><a href="/painel/${room.doorid}/config">Configuracoes</a></li>
                     </#if>
@@ -192,12 +175,6 @@
                                     <br>
                                     <p>Luz 4</p><div class="ripple-container"></div>
                                 </a>
-
-                                <a class="btn btn-raised  light btn-default" lid="0">
-                                    <i class="fa fa-lightbulb-o"></i>
-                                    <br>
-                                    <p>Luz 5</p><div class="ripple-container"></div>
-                                </a>
                             </div>
 
 
@@ -293,16 +270,6 @@
                                 <h3 class="panel-title">Custo da energia utilizada</h3>
                             </div>
                             <div class="panel-body consumoDeEnergiaPreco">R$ 125,00</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="bs-component">
-                        <div class="panel panel-success">
-                            <div class="panel-heading">
-                                <h3 class="panel-title">Custo da energia economizada</h3>
-                            </div>
-                            <div class="panel-body">R$ 52,00</div>
                         </div>
                     </div>
                 </div>

@@ -4,6 +4,8 @@ import com.mellemhere.main.Controller;
 import com.mellemhere.server.websocket.mObjects.DoorOpenedObject;
 import com.mellemhere.server.websocket.mObjects.EventObject;
 import com.mellemhere.server.websocket.mObjects.LastEntryObject;
+import com.mellemhere.server.websocket.mObjects.LightConObject;
+import com.mellemhere.server.websocket.mObjects.LogObject;
 import com.mellemhere.servers.connection.Command;
 import com.mellemhere.servers.connection.Room;
 import com.mellemhere.servers.connection.ConnectionStatus;
@@ -174,4 +176,19 @@ public class WebSocketController {
         }
     }
 
+    float precoTotal = 0;
+
+    public void calcularPreco(float consumo) {
+        precoTotal += (float) ((float) consumo * 127 / (float) 1000) * (((float) (3000) / (float) (1000 * 60 * 60)) % (float) 24);
+        broadcastToAll("consumo", new LogObject(String.format("%.2f", precoTotal)));
+    }
+    
+    public void calcularWVH(float consumo) {
+        float xuxa = (consumo * 127 ) / 3600;
+        broadcastToAll("consumoW", new LogObject(String.format("%.2f", xuxa)));
+    }
+    
+    
+    
+    
 }

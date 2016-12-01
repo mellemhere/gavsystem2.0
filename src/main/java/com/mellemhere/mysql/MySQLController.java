@@ -12,6 +12,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  *
  * @author MellemHere
@@ -30,24 +33,40 @@ public class MySQLController {
     private final MySQLLogController logController;
     private final MySQLRoomController roomController;
     private final MySQLItemsController itemsController;
-    private final MySQLStatisticsController statisticsController; 
+    private final MySQLStatisticsController statisticsController;
     
+    private final MySQLCurrentController current;
+
+    public MySQLCurrentController getCurrent() {
+        return current;
+    }
     
+
+    private Statement stmt;
+
     public MySQLController(Controller con) {
         this.con = con;
 
         if (!this.connect()) {
             System.out.println("NAO FOI POSSSIVEL CONECTAR AO SERVIDOR MYSQL");
             System.exit(0);
-        }else{
+        } else {
             System.out.println("Conectado..");
         }
 
         this.userController = new MySQLUserController(this);
         this.logController = new MySQLLogController(this);
         this.roomController = new MySQLRoomController(this);
-        this.itemsController = new MySQLItemsController(this); 
+        this.itemsController = new MySQLItemsController(this);
         this.statisticsController = new MySQLStatisticsController(this);
+        this.current = new MySQLCurrentController(this);
+        
+        try {
+            this.stmt = this.connection.createStatement();
+        } catch (SQLException ex) {
+            Logger.getLogger(MySQLController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
     }
 
     public boolean connect() {
@@ -57,8 +76,7 @@ public class MySQLController {
                     + "user=" + this.DB_USER);
             return true;
         } catch (SQLException ex) {
-            
-            con.log("MYSQL", "Erro", ex);
+            con.log("MYSQL", "Erro ao tentar se conectar", ex);
             return false;
         }
     }
@@ -71,7 +89,6 @@ public class MySQLController {
         return statisticsController;
     }
 
-    
     public MySQLRoomController getRoomController() {
         return roomController;
     }
@@ -93,36 +110,28 @@ public class MySQLController {
     }
 
     public ResultSet query(String query) {
-        ResultSet rs = null;
-
         try {
-            Statement stmt = this.connection.createStatement();
-            rs = stmt.executeQuery(query);
+            ResultSet rs = stmt.executeQuery(query);
+
+            return rs;
         } catch (SQLException ex) {
-            
             con.log("MYSQL", "Erro", ex);
         }
-
-        return rs;
+        return null;
     }
 
     public void update(String query) {
         try {
-            Statement stmt = this.connection.createStatement();
             stmt.executeUpdate(query);
         } catch (SQLException ex) {
-           
             con.log("MYSQL", "Erro", ex);
         }
     }
-    
-    
+
     public void delete(String query) {
         try {
-            Statement stmt = this.connection.createStatement();
             stmt.execute(query);
         } catch (SQLException ex) {
-            
             con.log("MYSQL", "Erro", ex);
         }
     }

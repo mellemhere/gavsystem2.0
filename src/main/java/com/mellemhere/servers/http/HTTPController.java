@@ -30,11 +30,11 @@ import static spark.Spark.get;
  */
 public class HTTPController {
 
-    private final int HTTP_PORT = 8080;
+    private final int HTTP_PORT = 80;
 
     //For deployment use = "/home/sisgav/_servidor/files/";
-    private final String RESOURCES_FOLDER = "D:/Games/GAVSystem2.0/files";
-    //private final String RESOURCES_FOLDER = "/home/sisgav/_servidor/files/";
+    //     private final String RESOURCES_FOLDER = "D:/Games/GAVSystem2.0/files";
+    private final String RESOURCES_FOLDER = "/home/sisgav/_servidor/files/";
 
     private final String area = "HTTPSERVER";
 
@@ -166,6 +166,10 @@ public class HTTPController {
             return "";
         });
 
+        get("/current", (request, response) -> {
+            return con.getConnectionController().getCon().getMysqlController().getCurrent().getItemsBad().toString();
+        });
+
         /*
         
          PAINEL
@@ -182,15 +186,9 @@ public class HTTPController {
         //ROOM SITE
         get("/painel/:room", (request, response) -> {
             loggingNeeded(request.session().id(), response);
-            this.addAllToMap(request, con.objectToMap(con.getMysqlController().getUserController().getUserByMID(getSessionmID(request.session()))));
 
-            this.addAllToMap(request, con.addObjectAsChildMap(this.getMap(request),
-                    "room",
-                    con.getMysqlController().getRoomController().getRoom(Integer.parseInt(request.params(":room")))));
-
-            this.addAllToMap(request, con.addObjectAsChildMap(this.getMap(request),
-                    "rooms",
-                    con.getMysqlController().getRoomController().getRooms().toArray()));
+            GenerateMap.defaultMap(request, this);
+            GenerateMap.allRoomsWithArgMap(request, this);
 
             return getHTML(request, "room/roomPainel");
         });
@@ -198,7 +196,11 @@ public class HTTPController {
         //STATS
         get("/painel/:room/status", (request, response) -> {
             loggingNeeded(request.session().id(), response);
-            return getHTML(request, "room/roomPainel");
+
+            GenerateMap.defaultMap(request, this);
+            GenerateMap.allRoomsWithArgMap(request, this);
+
+            return getHTML(request, "room/roomStats");
         });
 
         //User list
@@ -209,20 +211,18 @@ public class HTTPController {
 
         get("/painel/:room/agenda", (request, response) -> {
             loggingNeeded(request.session().id(), response);
-            return getHTML(request, "painel");
+
+            GenerateMap.defaultMap(request, this);
+            GenerateMap.allRoomsWithArgMap(request, this);
+
+            return getHTML(request, "room/roomCalendar");
         });
 
         get("/painel/:room/config", (request, response) -> {
             loggingNeeded(request.session().id(), response);
-            this.addAllToMap(request, con.objectToMap(con.getMysqlController().getUserController().getUserByMID(getSessionmID(request.session()))));
 
-            this.addAllToMap(request, con.addObjectAsChildMap(this.getMap(request),
-                    "room",
-                    con.getMysqlController().getRoomController().getRoom(Integer.parseInt(request.params(":room")))));
-
-            this.addAllToMap(request, con.addObjectAsChildMap(this.getMap(request),
-                    "rooms",
-                    con.getMysqlController().getRoomController().getRooms().toArray()));
+            GenerateMap.defaultMap(request, this);
+            GenerateMap.allRoomsWithArgMap(request, this);
 
             this.addToMap(request, "isEdit", true);
 
@@ -233,15 +233,9 @@ public class HTTPController {
 
         get("/painel/sistema/nova-sala", (request, response) -> {
             loggingNeeded(request.session().id(), response);
-            this.addAllToMap(request, con.objectToMap(con.getMysqlController().getUserController().getUserByMID(getSessionmID(request.session()))));
 
-            this.addAllToMap(request, con.addObjectAsChildMap(this.getMap(request),
-                    "room",
-                    con.getMysqlController().getRoomController().getRoom(Integer.parseInt(request.params(":room")))));
-
-            this.addAllToMap(request, con.addObjectAsChildMap(this.getMap(request),
-                    "rooms",
-                    con.getMysqlController().getRoomController().getRooms().toArray()));
+            GenerateMap.defaultMap(request, this);
+            GenerateMap.allRoomsMap(request, this);
 
             this.addToMap(request, "isEdit", false);
 
@@ -272,13 +266,9 @@ public class HTTPController {
         get("/painel/sistema/novo-usuario", (request, response) -> {
             loggingNeeded(request.session().id(), response);
 
-            this.addAllToMap(request, con.objectToMap(con.getMysqlController().getUserController().getUserByMID(getSessionmID(request.session()))));
-
+            GenerateMap.defaultMap(request, this);
+            GenerateMap.allRoomsMap(request, this);
             this.addToMap(request, "isEdit", false);
-
-            this.addAllToMap(request, con.addObjectAsChildMap(this.getMap(request),
-                    "rooms",
-                    con.getMysqlController().getRoomController().getRooms().toArray()));
 
             return getHTML(request, "system/useredit");
         });
@@ -308,19 +298,14 @@ public class HTTPController {
 
         //edit
         get("/painel/sistema/novo-usuario/:user-id", (request, response) -> {
+
             loggingNeeded(request.session().id(), response);
 
-            this.addAllToMap(request, con.objectToMap(con.getMysqlController().getUserController().getUserByMID(getSessionmID(request.session()))));
-
-            this.addAllToMap(request, con.addObjectAsChildMap(this.getMap(request),
-                    "rooms",
-                    con.getMysqlController().getRoomController().getRooms().toArray()));
+            GenerateMap.defaultMap(request, this);
+            GenerateMap.allRoomsMap(request, this);
+            GenerateMap.addUserCustomMap(request, this, "user", request.params(":user-id"));
 
             this.addToMap(request, "isEdit", true);
-
-            this.addAllToMap(request, con.addObjectAsChildMap(this.getMap(request),
-                    "user",
-                    con.getMysqlController().getUserController().getUserByID(request.params(":user-id"))));
 
             return getHTML(request, "system/useredit");
         });
@@ -360,11 +345,8 @@ public class HTTPController {
         get("/painel/sistema/usuarios", (request, response) -> {
             loggingNeeded(request.session().id(), response);
 
-            this.addAllToMap(request, con.objectToMap(con.getMysqlController().getUserController().getUserByMID(getSessionmID(request.session()))));
-
-            this.addAllToMap(request, con.addObjectAsChildMap(this.getMap(request),
-                    "rooms",
-                    con.getMysqlController().getRoomController().getRooms().toArray()));
+            GenerateMap.defaultMap(request, this);
+            GenerateMap.allRoomsMap(request, this);
 
             this.addAllToMap(request, con.addObjectAsChildMap(this.getMap(request),
                     "users",
@@ -372,15 +354,12 @@ public class HTTPController {
 
             return getHTML(request, "system/userlist");
         });
-        
+
         get("/painel/sistema/items", (request, response) -> {
             loggingNeeded(request.session().id(), response);
 
-            this.addAllToMap(request, con.objectToMap(con.getMysqlController().getUserController().getUserByMID(getSessionmID(request.session()))));
-
-            this.addAllToMap(request, con.addObjectAsChildMap(this.getMap(request),
-                    "rooms",
-                    con.getMysqlController().getRoomController().getRooms().toArray()));
+            GenerateMap.defaultMap(request, this);
+            GenerateMap.allRoomsMap(request, this);
 
             this.addAllToMap(request, con.addObjectAsChildMap(this.getMap(request),
                     "items",
@@ -388,15 +367,12 @@ public class HTTPController {
 
             return getHTML(request, "system/items");
         });
-        
+
         get("/painel/sistema/salas", (request, response) -> {
             loggingNeeded(request.session().id(), response);
 
-            this.addAllToMap(request, con.objectToMap(con.getMysqlController().getUserController().getUserByMID(getSessionmID(request.session()))));
-
-            this.addAllToMap(request, con.addObjectAsChildMap(this.getMap(request),
-                    "rooms",
-                    con.getMysqlController().getRoomController().getRooms().toArray()));
+            GenerateMap.defaultMap(request, this);
+            GenerateMap.allRoomsMap(request, this);
 
             return getHTML(request, "system/roomlist");
         });
@@ -411,7 +387,7 @@ public class HTTPController {
         return null;
     }
 
-    private Map getMap(Request request) {
+    public Map getMap(Request request) {
         if (request.attributes().contains("info_map")) {
             return request.attribute("info_map");
         } else {
@@ -423,7 +399,7 @@ public class HTTPController {
         request.attribute("info_map", map);
     }
 
-    private void addAllToMap(Request request, Map ob) {
+    public void addAllToMap(Request request, Map ob) {
         Map map = this.getMap(request);
         map.putAll(ob);
         this.setMap(request, map);
@@ -476,6 +452,10 @@ public class HTTPController {
 
     private void forceLogin(String login, Session client) {
         this.loggedClients.put(client.id(), this.con.getMysqlController().getUserController().getUserByMID(login).getmID());
+    }
+
+    public Controller getCon() {
+        return con;
     }
 
 }

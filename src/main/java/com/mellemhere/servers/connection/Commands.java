@@ -41,20 +41,20 @@ public class Commands {
                     /*
                      SE ESTIVER CORRETO ABRE A PORTA
                      */
-                    return "o";
+                    return "o;o";
                 }
                 break;
 
             case "fo":
-                return "o";
+                return "o;o";
             case "c":
-                /*
-                 Door closed
-                 */
+                con.getConnectionController().getCon().getMysqlController().getCurrent().put(args);
+                con.getConnectionController().getCon().getWebSocketController().calcularPreco(Float.parseFloat(args));
+                con.getConnectionController().getCon().getWebSocketController().calcularWVH(Float.parseFloat(args));
                 break;
             case "l":
-                String id = args.split("-")[0];
-                if (args.split("-")[1].equalsIgnoreCase("on")) {
+                String id = args.split("")[0];
+                if (args.split("")[1].equalsIgnoreCase("1")) {
                     this.connection.getConnection().getLightControl().toogleLight(id, LightState.ON);
                 }else{
                     this.connection.getConnection().getLightControl().toogleLight(id, LightState.OFF);
