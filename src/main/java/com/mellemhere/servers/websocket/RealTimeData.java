@@ -158,7 +158,7 @@ public class RealTimeData {
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try {
-            ImageIO.write(image, "JPEG", baos);
+            ImageIO.write(image, "PNG", baos);
         } catch (IOException ex) {
             ex.printStackTrace();
         }

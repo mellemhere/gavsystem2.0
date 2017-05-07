@@ -91,7 +91,36 @@ public class MySQLRoomController {
                 }
             }
         }
+    }
 
+    public RoomObject getRoomByID(int roomID) {
+        ResultSet rs = null;
+        try {
+            rs = con.query("SELECT * FROM `" + DB_NAME + "` WHERE `id`='" + roomID + "'");
+            rs.next();
+
+            RoomObject room = new RoomObject();
+
+            room.setId(rs.getInt("id"));
+            room.setDoorID(rs.getInt("doorID"));
+            room.setName(rs.getString("name"));
+            room.setDescription(rs.getString("description"));
+            room.setComID(rs.getString("comID"));
+
+            return room;
+        } catch (SQLException ex) {
+            con.getController().log(DB_NAME, "Erro2", ex);
+            return null;
+        } finally {
+            if (rs != null) {
+                try {
+                    rs.close();
+                } catch (SQLException ex) {
+                    con.getController().log(DB_NAME, "Erro com getRooms", ex);
+                    Logger.getLogger(MySQLUserController.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
     }
 
 }

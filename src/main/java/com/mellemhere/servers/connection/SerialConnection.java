@@ -11,7 +11,8 @@ import com.mellemhere.server.websocket.mObjects.RoomObject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.LinkedHashSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -26,8 +27,9 @@ public class SerialConnection extends Thread implements ConnectionInterface {
     private String area = "SERIAL-CONNECTION-";
     private final String COM_ID;
     private final int COM_INDEX;
-    private final RoomObject room;
 
+    private final RoomObject room;
+    
     private boolean running = false;
 
     private SerialPort comPort;
@@ -39,11 +41,11 @@ public class SerialConnection extends Thread implements ConnectionInterface {
 
     private int getCOMPort(String nomeDaCom) {
 
-        LinkedHashSet<String> ports = new LinkedHashSet<>();
+        /*LinkedHashSet<String> ports = new LinkedHashSet<>();
 
         for (SerialPort serial : SerialPort.getCommPorts()) {
             ports.add(serial.getSystemPortName());
-        }
+        }*/
 
         int index = 0;
         for (SerialPort serial : SerialPort.getCommPorts()) {
@@ -62,9 +64,11 @@ public class SerialConnection extends Thread implements ConnectionInterface {
         this.con = con.getCcon();
         this.connection = con;
         this.COM_ID = room.getComID();
-        this.room = room;
+        
         this.area += room.getDoorID();
-
+        
+        this.room = room;
+        
         this.cmd = new Commands(this);
 
         this.COM_INDEX = getCOMPort(this.COM_ID);
@@ -82,6 +86,7 @@ public class SerialConnection extends Thread implements ConnectionInterface {
 
     @Override
     public void stopConnection() {
+        this.running = false;
     }
 
     @Override
@@ -92,6 +97,7 @@ public class SerialConnection extends Thread implements ConnectionInterface {
 
         if (!isConnected) {
             this.con.log(area, "Nao 'e possivel mandar mensagem para cliente nao conectado!", null);
+            this.restart();
             return;
         }
 
@@ -99,6 +105,7 @@ public class SerialConnection extends Thread implements ConnectionInterface {
             out.write(message.getBytes());
         } catch (IOException ex) {
             this.con.log(area, "Nao foi possivel mandar mensagem para o cliente via serial!", ex);
+            this.restart();
         }
     }
 
@@ -109,6 +116,7 @@ public class SerialConnection extends Thread implements ConnectionInterface {
         con.log(area, "Conectando a porta " + this.COM_ID, null);
         if (this.COM_INDEX == -1) {
             con.log(area, "Porta " + this.COM_ID + " nao encontrada", null);
+            connection.setStatus(ConnectionStatus.FAILED);
             return;
         }
         comPort = SerialPort.getCommPorts()[this.COM_INDEX];
@@ -124,6 +132,7 @@ public class SerialConnection extends Thread implements ConnectionInterface {
         while (!comPort.isOpen()) {
             comPort.openPort();
         }
+        con.log(area, "Conectado com - " + this.area, null);
         try {
             this.isConnected = true;
             String command = "";
@@ -145,6 +154,7 @@ public class SerialConnection extends Thread implements ConnectionInterface {
         } catch (Exception e) {
             con.log(area, "Erro ao se comunicar com porta serial (" + this.COM_ID + ")", e);
             this.isConnected = false;
+            this.restart();
         }
 
         con.log(area, "Fechando comunicacao com a porta (" + this.COM_ID + ")", null);
@@ -185,5 +195,19 @@ public class SerialConnection extends Thread implements ConnectionInterface {
         return isConnected;
     }
     
+    public void restart(){
+        try {
+            this.out.close();
+        } catch (IOException ex) {
+            Logger.getLogger(SerialConnection.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        this.comPort.closePort();
+        this.stopConnection();
+        
+        this.con.setDesconnected(room);
+        
+        this.con.reconnect(room);
+        
+    }
     
 }

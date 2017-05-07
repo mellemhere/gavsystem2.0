@@ -33,8 +33,10 @@ public class Statistics {
     }
 
     public void uptime() {
-        this.scon.set(roomID, "uptime", room.getUptime());
+       // this.scon.set(roomID, "uptime", room.getUptime());
+        //TO-DO Check whi this is generating an error 
     }
+    
 
     public void energyConsumption() {
         /*

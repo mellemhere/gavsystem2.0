@@ -5,12 +5,9 @@
  */
 package com.mellemhere.main;
 
-import com.mellemhere.util.Festa;
-import com.mellemhere.util.LightCon_OLD;
 import com.google.gson.Gson;
 import com.mellemhere.mysql.MySQLController;
-import com.mellemhere.prop.lights.LightState_OLD;
-import com.mellemhere.server.websocket.mObjects.LightObject;
+import com.mellemhere.patrimony.PatrimonyController;
 import com.mellemhere.servers.http.HTTPController;
 import com.mellemhere.servers.connection.ConnectionController;
 import com.mellemhere.servers.websocket.WebSocketController;
@@ -26,22 +23,30 @@ import org.json.JSONObject;
 
 public class Controller {
 
+    /*
+    
+     SYSGAV
+    
+     */
+    public boolean debug = true;
+
     private MySQLController mysqlController;
 
-   // private DataBase database;
+    // private DataBase database;
     private HTTPController httpController;
     private WebSocketController webSocketController;
 
     private ConnectionController connectionController;
 
     private String LogBuffer = "";
+    
+    private PatrimonyController patrimonyController;
+    
+    
     //private Statistics satistics;
     // private EntryLog entryLog;
     public long SYSTEM_STARTUP_TIME;
 
-    private LightState_OLD light;
-
-    public LightCon_OLD lightcon;
 
     public Controller() {
         this.start();
@@ -53,9 +58,6 @@ public class Controller {
         this.mysqlController = new MySQLController(this);
     }
 
-    public LightState_OLD getLight() {
-        return light;
-    }
 
     public MySQLController getMysqlController() {
         return mysqlController;
@@ -73,6 +75,12 @@ public class Controller {
         return connectionController;
     }
 
+    public PatrimonyController getPatrimonyController() {
+        return patrimonyController;
+    }
+    
+    
+
     private void startServers() {
         //WEBSOCKET SERVER
         this.webSocketController = new WebSocketController(this);
@@ -84,11 +92,9 @@ public class Controller {
         //STARTS ALL THE CONNECTIONS
         this.connectionController = new ConnectionController(this);
         this.connectionController.openAll();
-
-    }
-
-    public LightCon_OLD getLightController() {
-        return lightcon;
+        
+        this.patrimonyController = new PatrimonyController(this);
+        
     }
 
     /*
@@ -130,23 +136,6 @@ public class Controller {
 
     public void stop() {
         System.exit(0);
-    }
-
-    public void changeLight(LightObject data) {
-        //TODO
-    }
-
-    Festa festa;
-
-    public void festa(int speed) {
-        if (this.festa == null) {
-            this.festa = new Festa(this);
-            this.festa.speed = speed;
-            this.festa.start();
-        } else {
-            this.festa.setRunning(false);
-            this.festa = null;
-        }
     }
 
     public JSONObject toJSON(Object element) {
@@ -227,4 +216,5 @@ public class Controller {
                 - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(timeInMS)));
     }
 
+  
 }

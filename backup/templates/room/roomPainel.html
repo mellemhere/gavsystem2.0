@@ -44,21 +44,71 @@
                 <h1 class="room-title">${room.name}</h1>
                 <span>Numero da sala: ${room.doorid}</span>
             </div>
-            
-            <#include "../itemSearch.html"> 
 
             <div class="row">
                 <div class="col-md-6">
 
                     <div class="bs-component">
 
+                        <style>
+                            .almox{
+                                position: relative;
+                            }
 
+                            .almox input{
+                                background-color: white;
+                                padding: 10px;
+                                color: black;
+                            }
+
+                            .almox table{
+                                position: absolute;
+                                background-color: white;
+                                top: 38px;
+                                z-index: 5;
+                                display: none;
+                            }
+
+
+                        </style>
 
                         <div class="panel panel almox">
                             <input type="text" placeholder="Pesquise por um item..." class="form-control" id="almoxinput">
+                            <table class="table table-striped table-hover " id="almoxtable">
+                                <thead>
+                                    <tr>
+                                        <th>Nome</th>
+                                        <th>Caixa</th>
+                                        <th>Armario</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
                         </div>
+                        <a href="/painel/sistema/items" style="
+                           position: absolute;
+                           top: 46px;
+                           right: 16px;">Ver todos os items</a>
+                        <script>
 
-                        <a href="/painel/sistema/items" style="position: absolute;top: 46px;right: 16px;">Ver todos os items</a>
+                            $('#almoxinput').on('keyup', function () {
+                                $.post("/items", {query: $(this).val()}, function (data) {
+                                    $("#almoxtable tbody").html("");
+                                    data = JSON.parse(data);
+                                    $.each(data, function (i, item) {
+                                        $("#almoxtable tbody").append("<tr><td>" + item.name + "</td><td>" + item.box + "</td><td>" + item.area + "</td></tr>");
+                                    });
+                                });
+                                $("#almoxtable").show();
+                            });
+                            $("body").click(function (e) {
+                                if (e.target.id != "almoxtable" || !$(e.target).parents("#almoxtable").size()) {
+                                    $("#almoxtable").hide();
+                                }
+                            });
+                        </script>
+
 
                     </div>
                     <!--<div class="panel panel-primary">
@@ -258,8 +308,11 @@
         </div>
 
         <script>
-            var doorID = ${room.doorid};</script>
+            var doorID = ${
+                room.doorid
+            }
+            ;</script>
         <script src="/js/socket.js"></script>
-        <script src="/js/search.js"></script>
+
     </body>
 </html>

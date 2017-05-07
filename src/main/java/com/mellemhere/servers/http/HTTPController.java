@@ -7,8 +7,10 @@ package com.mellemhere.servers.http;
 
 import com.fazecast.jSerialComm.SerialPort;
 import com.mellemhere.main.Controller;
+import com.mellemhere.servers.websocket.RealTimeData;
 import com.mellemhere.servers.websocket.WebSocketController;
 import com.mellemhere.servers.websocket.WebSocketHandler;
+import com.mellemhere.stickers.Sticker;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import java.io.File;
@@ -21,6 +23,7 @@ import static spark.Spark.*;
 
 import java.util.HashMap;
 import java.util.Map;
+import org.json.JSONObject;
 import spark.Request;
 import static spark.Spark.get;
 
@@ -31,10 +34,10 @@ import static spark.Spark.get;
 public class HTTPController {
 
     private final int HTTP_PORT = 80;
+    private final int DEBUG_HTTP_PORT = 8080;
 
-    //For deployment use = "/home/sisgav/_servidor/files/";
-    //     private final String RESOURCES_FOLDER = "D:/Games/GAVSystem2.0/files";
-    private final String RESOURCES_FOLDER = "/home/sisgav/_servidor/files/";
+    private final String DEBUG_RESOURCES_FOLDER = "C:\\files\\";
+    private final String RESOURCES_FOLDER = "C:\\files\\";
 
     private final String area = "HTTPSERVER";
 
@@ -49,18 +52,26 @@ public class HTTPController {
     public HTTPController(Controller con, WebSocketController wcon) {
         this.con = con;
         this.wcon = wcon;
+        File dir;
 
-        port(HTTP_PORT);
-
-        File dir = new File(RESOURCES_FOLDER);
-
-        if (!dir.exists()) {
-            System.out.println("A PASTAO NAO EXISTE :(");
-            dir.mkdir();
-            System.out.println(dir.getAbsolutePath());
+        if (con.debug) {
+            port(DEBUG_HTTP_PORT);
+            dir = new File(DEBUG_RESOURCES_FOLDER);
+            staticFiles.externalLocation(DEBUG_RESOURCES_FOLDER);
+        } else {
+            port(HTTP_PORT);
+            dir = new File(RESOURCES_FOLDER);
+            staticFiles.externalLocation(RESOURCES_FOLDER);
         }
 
-        staticFiles.externalLocation(RESOURCES_FOLDER);
+        if (!dir.exists()) {
+            System.out.println("A PASTAO RESOURCES NAO EXISTE :(");
+            dir.mkdir();
+            System.out.println(dir.getAbsolutePath());
+            System.exit(0);
+        } else {
+            con.log(area, "Local dos arquivos: " + dir.getAbsolutePath(), null);
+        }
 
         try {
             config.setDirectoryForTemplateLoading(dir);
@@ -97,8 +108,101 @@ public class HTTPController {
         webSocket("/room", wb);
 
         get("/", (request, response) -> {
-            response.redirect("/painel");
-            return "";
+            loggingNeeded(request.session().id(), response);
+            GenerateMap.defaultMap(request, this);
+            GenerateMap.allRoomsWithArgMap(request, this);
+            return getHTML(request, "index");
+        });
+
+        get("/patrimonio", (request, response) -> {
+            loggingNeeded(request.session().id(), response);
+
+            GenerateMap.defaultMap(request, this);
+            GenerateMap.allRoomsWithArgMap(request, this);
+            GenerateMap.patrimonyMap(request, this);
+            return getHTML(request, "system/items/listpatrimony");
+        });
+
+        post("/patrimonio/novo", (request, response) -> {
+            loggingNeeded(request.session().id(), response);
+            if (request.queryParams().contains("data")) {
+
+            }
+            return "oi";
+        });
+
+        post("/patrimonio/pesquisa", (request, response) -> {
+            loggingNeeded(request.session().id(), response);
+            addAllToMap(request, getCon().addObjectAsChildMap(getMap(request),
+                    "patrimonies",
+                    getCon().getMysqlController().getPatrimonyController().search(new JSONObject(request.queryParams("data"))).toArray()));
+
+            GenerateMap.allRoomsWithArgMap(request, this);
+
+            return getHTML(request, "system/items/tablepatrimonies");
+        });
+
+        get("/etiqueta", (request, response) -> {
+            loggingNeeded(request.session().id(), response);
+
+            GenerateMap.defaultMap(request, this);
+            GenerateMap.allRoomsWithArgMap(request, this);
+
+            return getHTML(request, "system/items/newSticker");
+        });
+
+        post("/etiqueta", (request, response) -> {
+
+            loggingNeeded(request.session().id(), response);
+
+            //INICIA CLASSE ETIQUETA COM TAMANHO 788 x 300
+            Sticker sticker = new Sticker(788, 300);
+
+            /*
+             NOME DA SALA
+             */
+            if (request.queryParams().contains("name")) {
+                String query = request.queryParams("name");
+                sticker.setName(query);
+            } else {
+                sticker.setName("");
+            }
+
+            /*
+             CODIGO ABAIXO DO NOME
+             */
+            if (request.queryParams().contains("sid")) {
+                String query = request.queryParams("sid");
+                if (query.equalsIgnoreCase("")) {
+
+                    sticker.setCode("");
+                } else {
+
+                    sticker.setCode("UPLABELET03006");
+                }
+            } else {
+                sticker.setCode("");
+            }
+
+
+            /*
+             CODIGO A SER ESCANEADO PELO QR CODE
+             */
+            sticker.setQRCode("{TESTE TESTE}");
+
+
+            /*
+             DEFINE O TEXTO EM BAIXO
+             */
+            if (request.queryParams().contains("infratext")) {
+                String query = request.queryParams("infratext");
+                sticker.setUnderText(query);
+            } else {
+                sticker.setUnderText("");
+            }
+
+            return RealTimeData.encodeToString(sticker.getSticker());
+
         });
 
         /*
@@ -109,7 +213,7 @@ public class HTTPController {
         get("/entrar", (request, response) -> {
 
             if (isLogged(request.session().id())) {
-                response.redirect("/painel");
+                response.redirect("/");
             }
 
             return getHTML(request, "login");
@@ -118,7 +222,7 @@ public class HTTPController {
         post("/entrar", (request, response) -> {
 
             if (isLogged(request.session().id())) {
-                response.redirect("/painel");
+                response.redirect("/");
             }
 
             this.addToMap(request, "error", true);
@@ -129,17 +233,32 @@ public class HTTPController {
                 if (request.queryParams().contains("password")) {
                     String password = request.queryParams("password");
                     String login = request.queryParams("login");
-
-                    if (!password.equalsIgnoreCase("") && !login.equalsIgnoreCase("")) {
-                        if (login(login, password, request.session(true))) {
-                            response.redirect("/painel");
-                        }
-                    } else if (password.equalsIgnoreCase("")) {
-                        if (con.getMysqlController().getUserController().getUserByMID(login).getPassword().equalsIgnoreCase(" ")) {
-                            forceLogin(login, request.session());
-                            response.redirect("/resetar/senha");
-                        }
+                    long mid;
+                    try {
+                        mid = Long.valueOf(login);
+                    } catch (Exception e) {
+                        return getHTML(request, "login");
                     }
+                    
+                    if (!login.trim().equalsIgnoreCase("")) {
+
+                        if (con.getMysqlController().getUserController().hasUserMID(mid)) {
+                            if (!password.trim().equalsIgnoreCase("")) {
+                                System.out.println("HERE");
+                                if (login(login, password, request.session(true))) {
+                                    System.out.println("HERE1");
+                                    response.redirect("/painel");
+                                }
+                            } else {
+                                if (con.getMysqlController().getUserController().getUserByMID(login).getPassword().equalsIgnoreCase(" ")) {
+                                    forceLogin(login, request.session());
+                                    response.redirect("/resetar/senha");
+                                }
+                            }
+                        }
+
+                    }
+
                 }
             }
 
@@ -153,7 +272,7 @@ public class HTTPController {
             if (request.queryParams().contains("query")) {
                 String query = request.queryParams("query");
 
-                return con.getMysqlController().getItemsController().getItems(query).toString();
+                return con.getMysqlController().getItemsController().getItems(query, 30).toString();
             }
 
             return getHTML(request, "login");
@@ -178,7 +297,7 @@ public class HTTPController {
         //INDEX
         get("/painel", (request, response) -> {
             loggingNeeded(request.session().id(), response);
-            response.redirect("/painel/208");
+            response.redirect("/");
             return "";
 
         });

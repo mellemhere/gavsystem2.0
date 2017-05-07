@@ -50,6 +50,26 @@ public class LightControl {
         this.broadcast(ID);
     }
 
+    
+    public void toogleLightNonBroadcastBack(String ID, LightState state) {
+        if (this.lights.containsKey(ID)) {
+            if (this.lights.get(ID) != state) {
+                this.lights.put(ID, state);
+                if (state == LightState.OFF) {
+                    lightsTime.remove(ID);
+                } else {
+                    lightsTime.put(ID, System.currentTimeMillis());
+                }
+            }
+        } else {
+            this.lights.put(ID, LightState.ON);
+            lightsTime.put(ID, System.currentTimeMillis());
+        }
+
+        this.broadcastNonBroadcastBack(ID);
+    }
+
+    
     public void toogleLight(String ID) {
         if (this.lights.containsKey(ID)) {
             if (isON(ID)) {
@@ -96,10 +116,35 @@ public class LightControl {
             }
 
         } else {
+            
             this.wcon.broadcastToRoomID(con.getRoom().getDoorID(), "light_changed", new LightObject(lightID, "off"));
             if (this.con.getStatus() == ConnectionStatus.CONNECTED) {
                 //Comand = l<id><state> Ex. l140  <- Light number 14 is off
                 this.con.getConnection().sendMessage(LIGHT_CMD + lightID + "0");
+            }
+        }
+    }
+    
+     public void broadcastNonBroadcastBack(String lightID) {
+        /*
+        
+         UPDATE ALL WEBCLIENTS AND CONTROLER
+        
+         */
+        if (this.lights.get(lightID) == LightState.ON) {
+            this.wcon.broadcastToRoomID(con.getRoom().getDoorID(), "light_changed", new LightObject(lightID, "on"));
+
+            if (this.con.getStatus() == ConnectionStatus.CONNECTED) {
+                //Comand = l<id><state> Ex. l141 <- Light number 14 is on
+               // this.con.getConnection().sendMessage(LIGHT_CMD + lightID + "1");
+            }
+
+        } else {
+            
+            this.wcon.broadcastToRoomID(con.getRoom().getDoorID(), "light_changed", new LightObject(lightID, "off"));
+            if (this.con.getStatus() == ConnectionStatus.CONNECTED) {
+                //Comand = l<id><state> Ex. l140  <- Light number 14 is off
+                //this.con.getConnection().sendMessage(LIGHT_CMD + lightID + "0");
             }
         }
     }

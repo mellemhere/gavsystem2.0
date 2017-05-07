@@ -18,7 +18,7 @@ public class GenerateMap {
     }
 
     /*
-        USER
+     USER
      */
     static void addUserMap(Request request, HTTPController controller) {
         controller.addAllToMap(request, controller.getCon().objectToMap(
@@ -37,7 +37,7 @@ public class GenerateMap {
     }
 
     /* 
-        ROOM
+     ROOM
      */
     static void roomMap(Request request, HTTPController controller, String roomID) {
         controller.addAllToMap(request, controller.getCon().addObjectAsChildMap(controller.getMap(request),
@@ -45,9 +45,17 @@ public class GenerateMap {
                 controller.getCon().getMysqlController().getRoomController().getRoom(Integer.parseInt(roomID))));
     }
 
+    static void patrimonyMap(Request request, HTTPController controller) {
+        controller.addAllToMap(request, controller.getCon().addObjectAsChildMap(controller.getMap(request),
+                "patrimonies",
+                controller.getCon().getMysqlController().getPatrimonyController().getPatrimonies().toArray()));
+    }
+
     //Returns room and all oth
     static void allRoomsWithArgMap(Request request, HTTPController controller) {
-        roomMap(request, controller, request.params(":room"));
+        if (request.params().containsKey(":room")) {
+            roomMap(request, controller, request.params(":room"));
+        }
 
         controller.addAllToMap(request, controller.getCon().addObjectAsChildMap(controller.getMap(request),
                 "rooms",

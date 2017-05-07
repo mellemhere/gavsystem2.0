@@ -55,9 +55,9 @@ public class Commands {
             case "l":
                 String id = args.split("")[0];
                 if (args.split("")[1].equalsIgnoreCase("1")) {
-                    this.connection.getConnection().getLightControl().toogleLight(id, LightState.ON);
+                    this.connection.getConnection().getLightControl().toogleLightNonBroadcastBack(id, LightState.ON);
                 }else{
-                    this.connection.getConnection().getLightControl().toogleLight(id, LightState.OFF);
+                    this.connection.getConnection().getLightControl().toogleLightNonBroadcastBack(id, LightState.OFF);
                 }
                 break;
             default:

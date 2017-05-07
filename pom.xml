@@ -65,9 +65,21 @@
             <version>1.8</version>
             <type>jar</type>
         </dependency>
+        <dependency>
+            <groupId>com.google.zxing</groupId>
+            <artifactId>core</artifactId>
+            <version>3.2.0</version>
+        </dependency>
+
+
 
     </dependencies>
     <build>
+        <resources>
+            <resource>
+                <directory>D:\Games\GAVSystem2.0\files</directory>
+            </resource>
+        </resources>
         <finalName>Door_System</finalName>
         <plugins>
 

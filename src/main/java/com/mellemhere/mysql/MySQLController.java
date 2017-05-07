@@ -34,13 +34,14 @@ public class MySQLController {
     private final MySQLRoomController roomController;
     private final MySQLItemsController itemsController;
     private final MySQLStatisticsController statisticsController;
-    
-    private final MySQLCurrentController current;
 
+    private final MySQLCurrentController current;
+    
+    private final MySQLPatrimonyController patrimonyController;
+    
     public MySQLCurrentController getCurrent() {
         return current;
     }
-    
 
     private Statement stmt;
 
@@ -60,6 +61,7 @@ public class MySQLController {
         this.itemsController = new MySQLItemsController(this);
         this.statisticsController = new MySQLStatisticsController(this);
         this.current = new MySQLCurrentController(this);
+        this.patrimonyController = new MySQLPatrimonyController(this);
         
         try {
             this.stmt = this.connection.createStatement();
@@ -109,10 +111,16 @@ public class MySQLController {
         return logController;
     }
 
+    public MySQLPatrimonyController getPatrimonyController() {
+        return patrimonyController;
+    }
+
+    
+    
     public ResultSet query(String query) {
         try {
+            this.stmt = this.connection.createStatement(); //Memory leak?
             ResultSet rs = stmt.executeQuery(query);
-
             return rs;
         } catch (SQLException ex) {
             con.log("MYSQL", "Erro", ex);

@@ -1,14 +1,12 @@
 package com.mellemhere.mysql;
 
-import com.mellemhere.server.websocket.mObjects.ItemObject;
+import com.mellemhere.prop.items.Item;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 /**
  *
@@ -22,55 +20,38 @@ public class MySQLItemsController {
 
     public MySQLItemsController(MySQLController con) {
         this.con = con;
+        con.getRoomController().getRoom(1);
 
     }
 
-    public JSONArray getItems(String query) {
-        JSONArray items = new JSONArray();
-        ResultSet rs = null;
+    public Item queryToObject(ResultSet rs) {
+        Item item = new Item();
         try {
-            //SELECT * FROM pet WHERE name LIKE '%w%';
-            rs = con.query("SELECT * FROM `" + DB_NAME + "` WHERE `NOME` LIKE  '%" + query + "%' LIMIT 30");
-            while (rs.next()) {
-                JSONObject item = new JSONObject();
-                item.put("name", rs.getString("NOME"));
-                item.put("area", rs.getString("AREA"));
-                item.put("box", rs.getString("CAIXA"));
-                items.put(item);
-            }
+            
+            item.setId(rs.getInt("id"));
+            item.setName(rs.getString("name"));
+            item.setQRTags(rs.getString("barCode"));
+            item.setPatrimony(rs.getString("patrimony"));
+            item.setStateID(rs.getInt("state"));
+            item.setRoomID(rs.getInt("room"));
+            item.setComment(rs.getString("comment"));
+
         } catch (SQLException ex) {
-            con.getController().log(DB_NAME, "Erro com getItems", ex);
-            return null;
-        } finally {
-            if (rs != null) {
-                try {
-                    rs.close();
-                } catch (SQLException ex) {
-                    con.getController().log(DB_NAME, "Erro com getItems", ex);
-                    Logger.getLogger(MySQLUserController.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
+            ex.printStackTrace();
         }
-
-        return items;
+        return item;
     }
 
-    public List<ItemObject> getItems() {
-        List<ItemObject> items = new ArrayList<>();
+    public List<Item> getItems(String query, int limit) {
+        List<Item> items = new ArrayList<>();
         ResultSet rs = null;
         try {
-            rs = con.query("SELECT * FROM `" + DB_NAME + "` WHERE 1");
+            rs = con.query("SELECT * FROM `" + DB_NAME + "` WHERE `name` LIKE  '%" + query + "%' LIMIT " + limit);
             while (rs.next()) {
-
-                ItemObject item = new ItemObject();
-
-                item.setName(rs.getString("NOME"));
-                item.setArea(rs.getString("AREA"));
-                item.setBox(rs.getString("CAIXA"));
+                Item item = queryToObject(rs);
                 items.add(item);
             }
         } catch (SQLException ex) {
-
             con.getController().log(DB_NAME, "Erro com getItems", ex);
             return null;
         } finally {
@@ -87,4 +68,32 @@ public class MySQLItemsController {
         return items;
     }
 
+    public List<Item> getItems() {
+        List<Item> items = new ArrayList<>();
+        ResultSet rs = null;
+        try {
+            rs = con.query("SELECT * FROM `" + DB_NAME + "` WHERE 1");
+
+            while (rs.next()) {
+                Item item = queryToObject(rs);
+                items.add(item);
+            }
+        } catch (SQLException ex) {
+            con.getController().log(DB_NAME, "Erro com getItems", ex);
+            return null;
+        } finally {
+            if (rs != null) {
+                try {
+                    rs.close();
+                } catch (SQLException ex) {
+                    con.getController().log(DB_NAME, "Erro com getItems", ex);
+                    Logger.getLogger(MySQLUserController.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+
+        return items;
+    }
+   
+    
 }
